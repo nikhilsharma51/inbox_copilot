@@ -63,8 +63,11 @@ out/
 EOF
 
 
-Inbox_Copilot_Complete_Roadmap.md
+Inbox_Copilot_Detailed_Roadmap.md
 
 credentials.json
 
 token.json
+
+.venv
+/venv
