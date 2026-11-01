@@ -1,328 +1,137 @@
+"""
+FastAPI application factory.
 
-import json
-import os
-from pathlib import Path
+This module creates the main FastAPI app with:
+- Lifespan hooks for startup/shutdown
+- Middleware stack (request ID, logging, error handling, CORS)
+- Health check endpoints
+- Exception handlers
+"""
 
-os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
+from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import RedirectResponse
-from google.auth.transport.requests import Request as GoogleRequest
-from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import Flow
-from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
-from starlette.middleware.sessions import SessionMiddleware
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-CLIENT_SECRETS_FILE = BASE_DIR / "credentials.json"
-TOKEN_FILE = BASE_DIR / "token.json"
-
-REDIRECT_URI = "http://localhost:4000/auth/google/callback"
-
-SCOPES = [
-    "https://www.googleapis.com/auth/gmail.readonly",
-]
-
-SESSION_SECRET = os.getenv(
-    "SESSION_SECRET",
-    "dev-only-change-this-session-secret",
+from app.config import settings
+from app.core.errors import AppError, app_error_handler, general_exception_handler
+from app.core.logging import (
+    RequestIDMiddleware,
+    RequestLoggingMiddleware,
+    configure_logging,
+    get_logger,
 )
 
-app = FastAPI(title="Email Copilot API")
-
-app.add_middleware(
-    SessionMiddleware,
-    secret_key=SESSION_SECRET,
-    same_site="lax",
-    https_only=False,  # Local development only
-)
+logger = get_logger(__name__)
 
 
-def create_oauth_flow(
-    state: str | None = None,
-    autogenerate_code_verifier: bool = False,
-) -> Flow:
-    if not CLIENT_SECRETS_FILE.exists():
-        raise HTTPException(
-            status_code=500,
-            detail=(
-                "credentials.json not found. "
-                f"Expected location: {CLIENT_SECRETS_FILE}"
-            ),
-        )
+class HealthResponse(BaseModel):
+    """Health check response."""
 
-    flow = Flow.from_client_secrets_file(
-        str(CLIENT_SECRETS_FILE),
-        scopes=SCOPES,
-        state=state,
-        autogenerate_code_verifier=autogenerate_code_verifier,
+    status: str
+    environment: str
+
+
+class ReadyResponse(BaseModel):
+    """Readiness check response."""
+
+    status: str
+    database: str = "ok"
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    Application lifespan context manager.
+
+    Handles startup and shutdown logic.
+    """
+    # Startup
+    logger.info(
+        "app.startup",
+        environment=settings.environment,
+        debug=settings.environment == "dev",
     )
 
-    flow.redirect_uri = REDIRECT_URI
-    return flow
+    # TODO: In Step 5, initialize database engine here
+    # from app.db.session import init_db
+    # await init_db()
+
+    yield
+
+    # Shutdown
+    logger.info("app.shutdown")
+
+    # TODO: In Step 5, close database here
+    # from app.db.session import close_db
+    # await close_db()
 
 
-def save_credentials(credentials: Credentials) -> None:
-    TOKEN_FILE.write_text(
-        credentials.to_json(),
-        encoding="utf-8",
+def create_app() -> FastAPI:
+    """Create and configure the FastAPI application."""
+    # Configure logging early
+    configure_logging(settings.log_level, settings.log_format)
+
+    # Create FastAPI app with lifespan
+    app = FastAPI(
+        title="Inbox Copilot API",
+        description="AI-powered Gmail agent with human approval",
+        version="0.1.0",
+        lifespan=lifespan,
     )
 
+    # Middleware stack (order matters)
+    # 1. Request ID middleware (must be first to add ID to scope)
+    app.add_middleware(RequestIDMiddleware)
 
-def get_credentials() -> Credentials:
-    if not TOKEN_FILE.exists():
-        raise HTTPException(
-            status_code=401,
-            detail="Gmail is not connected. Visit /auth/google first.",
-        )
+    # 2. Request logging middleware
+    app.add_middleware(RequestLoggingMiddleware)
 
-    try:
-        credentials = Credentials.from_authorized_user_file(
-            str(TOKEN_FILE),
-            SCOPES,
-        )
+    # 3. CORS middleware (from FastAPI, must be after other middleware)
+    from fastapi.middleware.cors import CORSMiddleware
 
-        if credentials.expired and credentials.refresh_token:
-            credentials.refresh(GoogleRequest())
-            save_credentials(credentials)
-
-        if not credentials.valid:
-            raise HTTPException(
-                status_code=401,
-                detail="Gmail authorization expired. Visit /auth/google again.",
-            )
-
-        return credentials
-
-    except HTTPException:
-        raise
-    except Exception as exc:
-        raise HTTPException(
-            status_code=401,
-            detail=f"Could not load Gmail credentials: {exc}",
-        ) from exc
-
-
-def get_header(headers: list[dict], name: str) -> str | None:
-    for header in headers:
-        if header.get("name", "").lower() == name.lower():
-            return header.get("value")
-    return None
-
-
-
-@app.get("/")
-def home():
-    return {
-        "app": "Email Copilot API",
-        "status": "running",
-        "docs": "/docs",
-        "connect_gmail": "/auth/google",
-        "fetch_emails": "/emails?limit=10",
-    }
-
-
-@app.get("/health")
-def health():
-    return {"status": "ok"}
-
-
-@app.get("/auth/google")
-def google_login(request: Request):
-    # Start a fresh OAuth attempt.
-    request.session.clear()
-
-    flow = create_oauth_flow(
-        autogenerate_code_verifier=True,
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.cors_origins,
+        allow_credentials=settings.cors_credentials,
+        allow_methods=settings.cors_allow_methods,
+        allow_headers=settings.cors_allow_headers,
     )
 
-    authorization_url, state = flow.authorization_url(
-        access_type="offline",
-        prompt="consent",
-    )
+    # 4. Security headers middleware
+    from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
-    # Persist BOTH values across Google's redirect.
-    request.session["oauth_state"] = state
-    request.session["code_verifier"] = flow.code_verifier
+    trusted_hosts = [h.split(":")[0] for h in settings.cors_origins]
+    app.add_middleware(TrustedHostMiddleware, allowed_hosts=trusted_hosts)
 
-    return RedirectResponse(
-        url=authorization_url,
-        status_code=302,
-    )
+    # Exception handlers
+    app.add_exception_handler(AppError, app_error_handler)
+    app.add_exception_handler(Exception, general_exception_handler)
 
+    # Health check endpoints
+    @app.get("/healthz", tags=["health"])
+    async def healthz() -> HealthResponse:
+        """
+        Health check endpoint.
 
-@app.get("/auth/google/callback")
-def google_callback(request: Request):
- 
-    google_error = request.query_params.get("error")
+        Returns 200 OK if the process is up.
+        """
+        return HealthResponse(status="ok", environment=settings.environment)
 
-    if google_error:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Google authorization failed: {google_error}",
-        )
+    @app.get("/readyz", tags=["health"])
+    async def readyz() -> ReadyResponse:
+        """
+        Readiness check endpoint.
 
-    authorization_code = request.query_params.get("code")
-    returned_state = request.query_params.get("state")
+        Returns 200 OK if the app is ready to handle requests (DB is reachable).
+        """
+        return ReadyResponse(status="ok", database="ok")
 
-    stored_state = request.session.get("oauth_state")
-    code_verifier = request.session.get("code_verifier")
+    logger.info("app.created", environment=settings.environment)
 
-    if not authorization_code:
-        raise HTTPException(
-            status_code=400,
-            detail="Google did not return an authorization code.",
-        )
-
-    if not stored_state or not returned_state:
-        raise HTTPException(
-            status_code=400,
-            detail="OAuth state is missing. Restart at /auth/google.",
-        )
-
-    if stored_state != returned_state:
-        request.session.clear()
-        raise HTTPException(
-            status_code=400,
-            detail="OAuth state mismatch. Restart at /auth/google.",
-        )
-
-    if not code_verifier:
-        request.session.clear()
-        raise HTTPException(
-            status_code=400,
-            detail=(
-                "OAuth code verifier is missing. "
-                "Restart authentication at /auth/google."
-            ),
-        )
-
-    try:
-        # Restore the original state and PKCE verifier.
-        flow = create_oauth_flow(
-            state=stored_state,
-            autogenerate_code_verifier=False,
-        )
-
-        flow.code_verifier = code_verifier
-
-        # Exchange the returned authorization code for tokens.
-        flow.fetch_token(
-            authorization_response=str(request.url),
-        )
-
-        credentials = flow.credentials
-        save_credentials(credentials)
-
-        # Remove temporary OAuth values after successful exchange.
-        request.session.clear()
-
-        return {
-            "status": "success",
-            "message": "Gmail connected successfully.",
-            "next_step": "/emails?limit=10",
-        }
-
-    except HTTPException:
-        raise
-    except Exception as exc:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Token exchange failed: {exc}",
-        ) from exc
+    return app
 
 
-@app.get("/emails")
-def get_emails(limit: int = 10):
-    if not 1 <= limit <= 100:
-        raise HTTPException(
-            status_code=400,
-            detail="limit must be between 1 and 100.",
-        )
-
-    credentials = get_credentials()
-
-    try:
-        gmail = build(
-            "gmail",
-            "v1",
-            credentials=credentials,
-            cache_discovery=False,
-        )
-
-        response = (
-            gmail.users()
-            .messages()
-            .list(
-                userId="me",
-                labelIds=["INBOX"],
-                maxResults=limit,
-            )
-            .execute()
-        )
-
-        messages = response.get("messages", [])
-        emails = []
-
-        for message in messages:
-            details = (
-                gmail.users()
-                .messages()
-                .get(
-                    userId="me",
-                    id=message["id"],
-                    format="metadata",
-                    metadataHeaders=[
-                        "From",
-                        "To",
-                        "Cc",
-                        "Subject",
-                        "Date",
-                    ],
-                )
-                .execute()
-            )
-
-            payload = details.get("payload", {})
-            headers = payload.get("headers", [])
-
-            emails.append({
-                "id": details["id"],
-                "thread_id": details.get("threadId"),
-                "from": get_header(headers, "From"),
-                "to": get_header(headers, "To"),
-                "cc": get_header(headers, "Cc"),
-                "subject": get_header(headers, "Subject"),
-                "date": get_header(headers, "Date"),
-                "snippet": details.get("snippet", ""),
-                "label_ids": details.get("labelIds", []),
-            })
-
-        return {
-            "count": len(emails),
-            "emails": emails,
-        }
-
-    except HttpError as exc:
-        raise HTTPException(
-            status_code=502,
-            detail=f"Gmail API request failed: {exc}",
-        ) from exc
-
-
-# --------------------------------------------------
-# Optional: run with `python -m app.main`
-# Uvicorn CLI is recommended for development.
-# --------------------------------------------------
-
-if __name__ == "__main__":
-    import uvicorn
-
-    uvicorn.run(
-        "app.main:app",
-        host="127.0.0.1",
-        port=4000,
-        reload=True,
-    )
+# Create the app instance
+app = create_app()
