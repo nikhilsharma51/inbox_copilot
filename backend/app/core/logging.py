@@ -1,12 +1,4 @@
-"""
-Structured logging configuration using structlog.
 
-Features:
-- JSON output for machine parsing
-- Request-ID tracking across logs
-- Automatic scrubbing of sensitive keys (tokens, passwords, cookies)
-- Request/response logging middleware
-"""
 
 import json
 import logging
@@ -21,11 +13,6 @@ from starlette.types import ASGIApp
 
 
 def scrub_sensitive_keys(logger: Any, method_name: str, event_dict: dict) -> dict:
-    """
-    Structlog filter that removes sensitive keys from all log events.
-
-    Removes: authorization, token, password, cookie, body, credit_card, ssn
-    """
     sensitive_keys = {
         "authorization",
         "token",
@@ -50,13 +37,7 @@ def scrub_sensitive_keys(logger: Any, method_name: str, event_dict: dict) -> dic
 
 
 def configure_logging(log_level: str, log_format: str) -> None:
-    """
-    Configure structlog with appropriate formatters and processors.
-
-    Args:
-        log_level: Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
-        log_format: "json" for JSON output, "text" for human-readable
-    """
+    
     level = getattr(logging, log_level.upper(), logging.INFO)
 
     # Shared processors (order matters)
@@ -97,7 +78,6 @@ def configure_logging(log_level: str, log_format: str) -> None:
 
 
 def get_logger(name: str = __name__):
-    """Get a structlog logger instance."""
     return structlog.get_logger(name)
 
 

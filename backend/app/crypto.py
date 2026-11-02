@@ -42,7 +42,7 @@ def encrypt(plaintext: str, aad: bytes) -> bytes:
     try:
         import os
 
-        nonce = os.urandom(NONCE_LEN)  # Fresh nonce every call, never reuse
+        nonce = os.urandom(NONCE_LEN) 
         key = settings.get_encryption_key()
         cipher = AESGCM(key)
         ciphertext = cipher.encrypt(nonce, plaintext.encode("utf-8"), aad)
