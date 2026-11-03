@@ -1,0 +1,1242 @@
+[
+  {
+    "id": "thread_001",
+    "subject": "Internship application – Backend Developer",
+    "messages": [
+      {
+        "id": "msg_001_01",
+        "rfc822_message_id": "<msg-001-01@mailbox.example>",
+        "sender": "priya.mehra@talentbridge.example",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-11-01T08:00:00+05:30",
+        "body_text": "Thank you for applying for our Backend Developer internship. Could you share your availability for a 20-minute introductory call?",
+        "is_from_me": false
+      },
+      {
+        "id": "msg_001_02",
+        "rfc822_message_id": "<msg-001-02@mailbox.example>",
+        "sender": "nikhil.sharma@example.com",
+        "to": [
+          "priya.mehra@talentbridge.example"
+        ],
+        "cc": [],
+        "date": "2026-11-01T13:00:00+05:30",
+        "body_text": "Hi Priya, thank you for considering my application. I am available Tuesday or Wednesday afternoon. Please let me know what works for you.",
+        "is_from_me": true
+      }
+    ],
+    "truncated": false
+  },
+  {
+    "id": "thread_002",
+    "subject": "Interview availability for AI Engineer Intern",
+    "messages": [
+      {
+        "id": "msg_002_01",
+        "rfc822_message_id": "<msg-002-01@mailbox.example>",
+        "sender": "careers@northstar.example",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-30T07:00:00+05:30",
+        "body_text": "We reviewed your application and would like to schedule a technical interview. Please share three suitable time slots.",
+        "is_from_me": false
+      },
+      {
+        "id": "msg_002_02",
+        "rfc822_message_id": "<msg-002-02@mailbox.example>",
+        "sender": "nikhil.sharma@example.com",
+        "to": [
+          "careers@northstar.example"
+        ],
+        "cc": [],
+        "date": "2026-10-30T12:00:00+05:30",
+        "body_text": "Hello, thanks for the update. I can attend on Monday at 11 AM, Tuesday at 2 PM, or Wednesday at 4 PM.",
+        "is_from_me": true
+      }
+    ],
+    "truncated": false
+  },
+  {
+    "id": "thread_003",
+    "subject": "Follow-up: Software Engineering Internship",
+    "messages": [
+      {
+        "id": "msg_003_01",
+        "rfc822_message_id": "<msg-003-01@mailbox.example>",
+        "sender": "priya.mehra@talentbridge.example",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-28T06:00:00+05:30",
+        "body_text": "I wanted to follow up on your application. Are you still interested in the summer internship opportunity?",
+        "is_from_me": false
+      },
+      {
+        "id": "msg_003_02",
+        "rfc822_message_id": "<msg-003-02@mailbox.example>",
+        "sender": "nikhil.sharma@example.com",
+        "to": [
+          "priya.mehra@talentbridge.example"
+        ],
+        "cc": [],
+        "date": "2026-10-28T11:00:00+05:30",
+        "body_text": "Yes, I am still interested. I would appreciate any update on the next steps.",
+        "is_from_me": true
+      }
+    ],
+    "truncated": false
+  },
+  {
+    "id": "thread_004",
+    "subject": "Offer discussion – Product Engineering Intern",
+    "messages": [
+      {
+        "id": "msg_004_01",
+        "rfc822_message_id": "<msg-004-01@mailbox.example>",
+        "sender": "founder@startupdemo.example",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-26T05:00:00+05:30",
+        "body_text": "We would like to discuss a possible internship offer. Are you free for a call tomorrow?",
+        "is_from_me": false
+      },
+      {
+        "id": "msg_004_02",
+        "rfc822_message_id": "<msg-004-02@mailbox.example>",
+        "sender": "nikhil.sharma@example.com",
+        "to": [
+          "founder@startupdemo.example"
+        ],
+        "cc": [],
+        "date": "2026-10-26T10:00:00+05:30",
+        "body_text": "Thank you for reaching out. Tomorrow after 3 PM works for me.",
+        "is_from_me": true
+      }
+    ],
+    "truncated": false
+  },
+  {
+    "id": "thread_005",
+    "subject": "Resume received – Data Platform Intern",
+    "messages": [
+      {
+        "id": "msg_005_01",
+        "rfc822_message_id": "<msg-005-01@mailbox.example>",
+        "sender": "careers@northstar.example",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-24T04:00:00+05:30",
+        "body_text": "Your resume has been received. Our team will review it and get back to you within five business days.",
+        "is_from_me": false
+      },
+      {
+        "id": "msg_005_02",
+        "rfc822_message_id": "<msg-005-02@mailbox.example>",
+        "sender": "nikhil.sharma@example.com",
+        "to": [
+          "careers@northstar.example"
+        ],
+        "cc": [],
+        "date": "2026-10-24T09:00:00+05:30",
+        "body_text": "Thanks for confirming receipt. I look forward to hearing from the team.",
+        "is_from_me": true
+      }
+    ],
+    "truncated": false
+  },
+  {
+    "id": "thread_006",
+    "subject": "Technical assignment submission",
+    "messages": [
+      {
+        "id": "msg_006_01",
+        "rfc822_message_id": "<msg-006-01@mailbox.example>",
+        "sender": "priya.mehra@talentbridge.example",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-22T03:00:00+05:30",
+        "body_text": "Please submit the attached assignment by Friday, 6 PM. Reply to this thread if you need clarification.",
+        "is_from_me": false
+      },
+      {
+        "id": "msg_006_02",
+        "rfc822_message_id": "<msg-006-02@mailbox.example>",
+        "sender": "nikhil.sharma@example.com",
+        "to": [
+          "priya.mehra@talentbridge.example"
+        ],
+        "cc": [],
+        "date": "2026-10-22T08:00:00+05:30",
+        "body_text": "I have submitted the assignment repository and included setup instructions in the README.",
+        "is_from_me": true
+      }
+    ],
+    "truncated": false
+  },
+  {
+    "id": "thread_007",
+    "subject": "Interview rescheduled",
+    "messages": [
+      {
+        "id": "msg_007_01",
+        "rfc822_message_id": "<msg-007-01@mailbox.example>",
+        "sender": "careers@northstar.example",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-20T02:00:00+05:30",
+        "body_text": "The interviewer is unavailable at the original time. Can we move your interview to Thursday at 10:30 AM?",
+        "is_from_me": false
+      },
+      {
+        "id": "msg_007_02",
+        "rfc822_message_id": "<msg-007-02@mailbox.example>",
+        "sender": "nikhil.sharma@example.com",
+        "to": [
+          "careers@northstar.example"
+        ],
+        "cc": [],
+        "date": "2026-10-20T07:00:00+05:30",
+        "body_text": "Thursday at 10:30 AM works for me. Thank you for letting me know.",
+        "is_from_me": true
+      }
+    ],
+    "truncated": false
+  },
+  {
+    "id": "thread_008",
+    "subject": "Application status – Full Stack Intern",
+    "messages": [
+      {
+        "id": "msg_008_01",
+        "rfc822_message_id": "<msg-008-01@mailbox.example>",
+        "sender": "priya.mehra@talentbridge.example",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-18T01:00:00+05:30",
+        "body_text": "Your application is still under review. We expect to share an update early next week.",
+        "is_from_me": false
+      },
+      {
+        "id": "msg_008_02",
+        "rfc822_message_id": "<msg-008-02@mailbox.example>",
+        "sender": "nikhil.sharma@example.com",
+        "to": [
+          "priya.mehra@talentbridge.example"
+        ],
+        "cc": [],
+        "date": "2026-10-18T06:00:00+05:30",
+        "body_text": "Thanks for the update. I remain interested in the role.",
+        "is_from_me": true
+      }
+    ],
+    "truncated": false
+  },
+  {
+    "id": "thread_009",
+    "subject": "Welcome to the project workspace",
+    "messages": [
+      {
+        "id": "msg_009_01",
+        "rfc822_message_id": "<msg-009-01@mailbox.example>",
+        "sender": "rohan.verma@example.com",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-16T00:00:00+05:30",
+        "body_text": "I have added you to the project workspace. Please review the API tasks in the onboarding board.",
+        "is_from_me": false
+      },
+      {
+        "id": "msg_009_02",
+        "rfc822_message_id": "<msg-009-02@mailbox.example>",
+        "sender": "nikhil.sharma@example.com",
+        "to": [
+          "rohan.verma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-16T05:00:00+05:30",
+        "body_text": "I can access the board. I will review the API tasks and post questions there.",
+        "is_from_me": true
+      }
+    ],
+    "truncated": false
+  },
+  {
+    "id": "thread_010",
+    "subject": "Code review: authentication middleware",
+    "messages": [
+      {
+        "id": "msg_010_01",
+        "rfc822_message_id": "<msg-010-01@mailbox.example>",
+        "sender": "rohan.verma@example.com",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-13T23:00:00+05:30",
+        "body_text": "Could you take another look at the refresh-token handling? I think the expiry check needs a test.",
+        "is_from_me": false
+      },
+      {
+        "id": "msg_010_02",
+        "rfc822_message_id": "<msg-010-02@mailbox.example>",
+        "sender": "nikhil.sharma@example.com",
+        "to": [
+          "rohan.verma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-14T04:00:00+05:30",
+        "body_text": "Good catch. I will add tests for expired and malformed refresh tokens and push an update.",
+        "is_from_me": true
+      }
+    ],
+    "truncated": false
+  },
+  {
+    "id": "thread_011",
+    "subject": "Meeting notes – PulseShield sprint planning",
+    "messages": [
+      {
+        "id": "msg_011_01",
+        "rfc822_message_id": "<msg-011-01@mailbox.example>",
+        "sender": "arjun.kapoor@example.com",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-11T22:00:00+05:30",
+        "body_text": "Sharing the sprint notes: finish the alert pipeline, add failure-state tests, and document the demo flow.",
+        "is_from_me": false
+      },
+      {
+        "id": "msg_011_02",
+        "rfc822_message_id": "<msg-011-02@mailbox.example>",
+        "sender": "nikhil.sharma@example.com",
+        "to": [
+          "arjun.kapoor@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-12T03:00:00+05:30",
+        "body_text": "Thanks. I will take the failure-state tests and update the demo notes.",
+        "is_from_me": true
+      }
+    ],
+    "truncated": false
+  },
+  {
+    "id": "thread_012",
+    "subject": "Database schema feedback",
+    "messages": [
+      {
+        "id": "msg_012_01",
+        "rfc822_message_id": "<msg-012-01@mailbox.example>",
+        "sender": "dr.singh@msit.example",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-10T09:00:00+05:30",
+        "body_text": "Your schema is close. Please clarify the relationship between memberships and organizations and add an index for lookup by organization.",
+        "is_from_me": false
+      },
+      {
+        "id": "msg_012_02",
+        "rfc822_message_id": "<msg-012-02@mailbox.example>",
+        "sender": "nikhil.sharma@example.com",
+        "to": [
+          "dr.singh@msit.example"
+        ],
+        "cc": [],
+        "date": "2026-10-10T14:00:00+05:30",
+        "body_text": "I will update the relationship diagram and add the organization index. I will share the revised schema.",
+        "is_from_me": true
+      }
+    ],
+    "truncated": false
+  },
+  {
+    "id": "thread_013",
+    "subject": "Project demo rehearsal",
+    "messages": [
+      {
+        "id": "msg_013_01",
+        "rfc822_message_id": "<msg-013-01@mailbox.example>",
+        "sender": "rohan.verma@example.com",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-08T08:00:00+05:30",
+        "body_text": "Can we rehearse the demo on Friday? Please bring the latest build and a short explanation of the architecture.",
+        "is_from_me": false
+      },
+      {
+        "id": "msg_013_02",
+        "rfc822_message_id": "<msg-013-02@mailbox.example>",
+        "sender": "nikhil.sharma@example.com",
+        "to": [
+          "rohan.verma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-08T13:00:00+05:30",
+        "body_text": "Friday works. I will prepare a clean demo dataset and walk through the architecture.",
+        "is_from_me": true
+      }
+    ],
+    "truncated": false
+  },
+  {
+    "id": "thread_014",
+    "subject": "Research paper discussion",
+    "messages": [
+      {
+        "id": "msg_014_01",
+        "rfc822_message_id": "<msg-014-01@mailbox.example>",
+        "sender": "dr.singh@msit.example",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-06T07:00:00+05:30",
+        "body_text": "Please read the evaluation section before our discussion. Focus on retrieval precision and the limitations of the benchmark.",
+        "is_from_me": false
+      },
+      {
+        "id": "msg_014_02",
+        "rfc822_message_id": "<msg-014-02@mailbox.example>",
+        "sender": "nikhil.sharma@example.com",
+        "to": [
+          "dr.singh@msit.example"
+        ],
+        "cc": [],
+        "date": "2026-10-06T12:00:00+05:30",
+        "body_text": "I have read it and noted two questions about the evaluation set and the baseline comparison.",
+        "is_from_me": true
+      }
+    ],
+    "truncated": false
+  },
+  {
+    "id": "thread_015",
+    "subject": "Placement drive registration",
+    "messages": [
+      {
+        "id": "msg_015_01",
+        "rfc822_message_id": "<msg-015-01@mailbox.example>",
+        "sender": "placements@msit.example",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-04T06:00:00+05:30",
+        "body_text": "Registration for the upcoming placement drive closes on 12 November. Complete the form if you wish to participate.",
+        "is_from_me": false
+      },
+      {
+        "id": "msg_015_02",
+        "rfc822_message_id": "<msg-015-02@mailbox.example>",
+        "sender": "nikhil.sharma@example.com",
+        "to": [
+          "placements@msit.example"
+        ],
+        "cc": [],
+        "date": "2026-10-04T11:00:00+05:30",
+        "body_text": "I have completed the registration form. Please let me know if any additional documents are required.",
+        "is_from_me": true
+      }
+    ],
+    "truncated": false
+  },
+  {
+    "id": "thread_016",
+    "subject": "OTP for account verification",
+    "messages": [
+      {
+        "id": "msg_016_01",
+        "rfc822_message_id": "<msg-016-01@mailbox.example>",
+        "sender": "no-reply@accounts.example",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-02T05:00:00+05:30",
+        "body_text": "Your verification code is 482913. It expires in 5 minutes. Do not share this code with anyone.",
+        "is_from_me": false
+      }
+    ],
+    "truncated": false
+  },
+  {
+    "id": "thread_017",
+    "subject": "Security alert: new sign-in",
+    "messages": [
+      {
+        "id": "msg_017_01",
+        "rfc822_message_id": "<msg-017-01@mailbox.example>",
+        "sender": "no-reply@accounts.example",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-09-30T04:00:00+05:30",
+        "body_text": "A new sign-in was detected from a Windows device. If this was not you, secure your account immediately.",
+        "is_from_me": false
+      },
+      {
+        "id": "msg_017_02",
+        "rfc822_message_id": "<msg-017-02@mailbox.example>",
+        "sender": "nikhil.sharma@example.com",
+        "to": [
+          "no-reply@accounts.example"
+        ],
+        "cc": [],
+        "date": "2026-09-30T09:00:00+05:30",
+        "body_text": "This sign-in was expected. No action is needed.",
+        "is_from_me": true
+      }
+    ],
+    "truncated": false
+  },
+  {
+    "id": "thread_018",
+    "subject": "Password reset requested",
+    "messages": [
+      {
+        "id": "msg_018_01",
+        "rfc822_message_id": "<msg-018-01@mailbox.example>",
+        "sender": "no-reply@accounts.example",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-09-28T03:00:00+05:30",
+        "body_text": "A password reset was requested for your account. Use the secure reset page within 30 minutes if you initiated this request.",
+        "is_from_me": false
+      },
+      {
+        "id": "msg_018_02",
+        "rfc822_message_id": "<msg-018-02@mailbox.example>",
+        "sender": "nikhil.sharma@example.com",
+        "to": [
+          "no-reply@accounts.example"
+        ],
+        "cc": [],
+        "date": "2026-09-28T08:00:00+05:30",
+        "body_text": "I initiated the reset and have updated my password.",
+        "is_from_me": true
+      }
+    ],
+    "truncated": false
+  },
+  {
+    "id": "thread_019",
+    "subject": "Weekly product and engineering digest",
+    "messages": [
+      {
+        "id": "msg_019_01",
+        "rfc822_message_id": "<msg-019-01@mailbox.example>",
+        "sender": "digest@techweekly.example",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-09-26T02:00:00+05:30",
+        "body_text": "This week: practical notes on agent evaluation, tool permissions, and resilient background jobs. Read the issue for links and examples.",
+        "is_from_me": false
+      }
+    ],
+    "truncated": false
+  },
+  {
+    "id": "thread_020",
+    "subject": "MCP ecosystem update",
+    "messages": [
+      {
+        "id": "msg_020_01",
+        "rfc822_message_id": "<msg-020-01@mailbox.example>",
+        "sender": "digest@techweekly.example",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-09-24T01:00:00+05:30",
+        "body_text": "The latest community digest covers transport changes, server testing patterns, and tool schema design.",
+        "is_from_me": false
+      }
+    ],
+    "truncated": false
+  },
+  {
+    "id": "thread_021",
+    "subject": "CloudNote: storage limit reached",
+    "messages": [
+      {
+        "id": "msg_021_01",
+        "rfc822_message_id": "<msg-021-01@mailbox.example>",
+        "sender": "support@cloudnote.example",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-09-22T00:00:00+05:30",
+        "body_text": "Your workspace has reached 90% of its storage allowance. Review large files or upgrade your plan.",
+        "is_from_me": false
+      },
+      {
+        "id": "msg_021_02",
+        "rfc822_message_id": "<msg-021-02@mailbox.example>",
+        "sender": "nikhil.sharma@example.com",
+        "to": [
+          "support@cloudnote.example"
+        ],
+        "cc": [],
+        "date": "2026-09-22T05:00:00+05:30",
+        "body_text": "I will review archived exports and remove obsolete test artifacts.",
+        "is_from_me": true
+      }
+    ],
+    "truncated": false
+  },
+  {
+    "id": "thread_022",
+    "subject": "CloudNote support ticket #CN-1042",
+    "messages": [
+      {
+        "id": "msg_022_01",
+        "rfc822_message_id": "<msg-022-01@mailbox.example>",
+        "sender": "support@cloudnote.example",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-09-19T23:00:00+05:30",
+        "body_text": "We are investigating the sync delay you reported. Could you share the approximate time the issue occurred?",
+        "is_from_me": false
+      },
+      {
+        "id": "msg_022_02",
+        "rfc822_message_id": "<msg-022-02@mailbox.example>",
+        "sender": "nikhil.sharma@example.com",
+        "to": [
+          "support@cloudnote.example"
+        ],
+        "cc": [],
+        "date": "2026-09-20T04:00:00+05:30",
+        "body_text": "The delay happened around 9:40 AM IST while syncing a folder with several PDFs.",
+        "is_from_me": true
+      }
+    ],
+    "truncated": false
+  },
+  {
+    "id": "thread_023",
+    "subject": "Subscription renewal reminder",
+    "messages": [
+      {
+        "id": "msg_023_01",
+        "rfc822_message_id": "<msg-023-01@mailbox.example>",
+        "sender": "support@cloudnote.example",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-11-01T22:00:00+05:30",
+        "body_text": "Your demo subscription is scheduled to renew on 15 November. Review the plan details in your account settings.",
+        "is_from_me": false
+      }
+    ],
+    "truncated": false
+  },
+  {
+    "id": "thread_024",
+    "subject": "Payment receipt – Demo workspace",
+    "messages": [
+      {
+        "id": "msg_024_01",
+        "rfc822_message_id": "<msg-024-01@mailbox.example>",
+        "sender": "support@cloudnote.example",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-31T09:00:00+05:30",
+        "body_text": "This is a receipt for your demo workspace payment. Reference: DEMO-2026-1184.",
+        "is_from_me": false
+      }
+    ],
+    "truncated": false
+  },
+  {
+    "id": "thread_025",
+    "subject": "SampleBank: transaction alert",
+    "messages": [
+      {
+        "id": "msg_025_01",
+        "rfc822_message_id": "<msg-025-01@mailbox.example>",
+        "sender": "alerts@samplebank.example",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-29T08:00:00+05:30",
+        "body_text": "A transaction of INR 249.00 was recorded on your sample account ending 1234. This is synthetic test data.",
+        "is_from_me": false
+      }
+    ],
+    "truncated": false
+  },
+  {
+    "id": "thread_026",
+    "subject": "SampleBank: monthly statement ready",
+    "messages": [
+      {
+        "id": "msg_026_01",
+        "rfc822_message_id": "<msg-026-01@mailbox.example>",
+        "sender": "alerts@samplebank.example",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-27T07:00:00+05:30",
+        "body_text": "Your monthly statement for October is ready to view in the sample banking portal.",
+        "is_from_me": false
+      }
+    ],
+    "truncated": false
+  },
+  {
+    "id": "thread_027",
+    "subject": "Invitation: Product feedback session",
+    "messages": [
+      {
+        "id": "msg_027_01",
+        "rfc822_message_id": "<msg-027-01@mailbox.example>",
+        "sender": "calendar@events.example",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-25T06:00:00+05:30",
+        "body_text": "You are invited to a product feedback session on 6 November at 3:00 PM. The meeting will last 30 minutes.",
+        "is_from_me": false
+      },
+      {
+        "id": "msg_027_02",
+        "rfc822_message_id": "<msg-027-02@mailbox.example>",
+        "sender": "nikhil.sharma@example.com",
+        "to": [
+          "calendar@events.example"
+        ],
+        "cc": [],
+        "date": "2026-10-25T11:00:00+05:30",
+        "body_text": "Accepted. I will join using the calendar link.",
+        "is_from_me": true
+      }
+    ],
+    "truncated": false
+  },
+  {
+    "id": "thread_028",
+    "subject": "Calendar update: project sync",
+    "messages": [
+      {
+        "id": "msg_028_01",
+        "rfc822_message_id": "<msg-028-01@mailbox.example>",
+        "sender": "calendar@events.example",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-23T05:00:00+05:30",
+        "body_text": "The project sync has moved from 2:00 PM to 2:30 PM. The meeting link is unchanged.",
+        "is_from_me": false
+      },
+      {
+        "id": "msg_028_02",
+        "rfc822_message_id": "<msg-028-02@mailbox.example>",
+        "sender": "nikhil.sharma@example.com",
+        "to": [
+          "calendar@events.example"
+        ],
+        "cc": [],
+        "date": "2026-10-23T10:00:00+05:30",
+        "body_text": "Thanks, I have updated my calendar.",
+        "is_from_me": true
+      }
+    ],
+    "truncated": false
+  },
+  {
+    "id": "thread_029",
+    "subject": "BrightStudio website requirements",
+    "messages": [
+      {
+        "id": "msg_029_01",
+        "rfc822_message_id": "<msg-029-01@mailbox.example>",
+        "sender": "maya@brightstudio.example",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-21T04:00:00+05:30",
+        "body_text": "We need a simple landing page with a services section, portfolio grid, contact form, and mobile-friendly layout. Can you share an estimate?",
+        "is_from_me": false
+      },
+      {
+        "id": "msg_029_02",
+        "rfc822_message_id": "<msg-029-02@mailbox.example>",
+        "sender": "nikhil.sharma@example.com",
+        "to": [
+          "maya@brightstudio.example"
+        ],
+        "cc": [],
+        "date": "2026-10-21T09:00:00+05:30",
+        "body_text": "I can share an initial estimate after reviewing the content and reference sites. Please send the assets when ready.",
+        "is_from_me": true
+      }
+    ],
+    "truncated": false
+  },
+  {
+    "id": "thread_030",
+    "subject": "BrightStudio: content and assets",
+    "messages": [
+      {
+        "id": "msg_030_01",
+        "rfc822_message_id": "<msg-030-01@mailbox.example>",
+        "sender": "maya@brightstudio.example",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-19T03:00:00+05:30",
+        "body_text": "I have attached the logo, service descriptions, and five portfolio images. Please confirm that everything came through.",
+        "is_from_me": false
+      },
+      {
+        "id": "msg_030_02",
+        "rfc822_message_id": "<msg-030-02@mailbox.example>",
+        "sender": "nikhil.sharma@example.com",
+        "to": [
+          "maya@brightstudio.example"
+        ],
+        "cc": [],
+        "date": "2026-10-19T08:00:00+05:30",
+        "body_text": "I received the assets. I will review image dimensions and send a first-page outline.",
+        "is_from_me": true
+      }
+    ],
+    "truncated": false
+  },
+  {
+    "id": "thread_031",
+    "subject": "StartupDemo API integration question",
+    "messages": [
+      {
+        "id": "msg_031_01",
+        "rfc822_message_id": "<msg-031-01@mailbox.example>",
+        "sender": "founder@startupdemo.example",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-17T02:00:00+05:30",
+        "body_text": "Our frontend needs endpoints for listing projects and creating a lead. Can you confirm the expected response format?",
+        "is_from_me": false
+      },
+      {
+        "id": "msg_031_02",
+        "rfc822_message_id": "<msg-031-02@mailbox.example>",
+        "sender": "nikhil.sharma@example.com",
+        "to": [
+          "founder@startupdemo.example"
+        ],
+        "cc": [],
+        "date": "2026-10-17T07:00:00+05:30",
+        "body_text": "I suggest consistent JSON envelopes with a data field and a structured error object. I will send a sample contract.",
+        "is_from_me": true
+      }
+    ],
+    "truncated": false
+  },
+  {
+    "id": "thread_032",
+    "subject": "StartupDemo: call recap and action items",
+    "messages": [
+      {
+        "id": "msg_032_01",
+        "rfc822_message_id": "<msg-032-01@mailbox.example>",
+        "sender": "founder@startupdemo.example",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-15T01:00:00+05:30",
+        "body_text": "Thanks for the call. Action items: share API docs, confirm auth method, and provide a staging URL.",
+        "is_from_me": false
+      },
+      {
+        "id": "msg_032_02",
+        "rfc822_message_id": "<msg-032-02@mailbox.example>",
+        "sender": "nikhil.sharma@example.com",
+        "to": [
+          "founder@startupdemo.example"
+        ],
+        "cc": [],
+        "date": "2026-10-15T06:00:00+05:30",
+        "body_text": "I will send the API contract and confirm the auth flow by tomorrow.",
+        "is_from_me": true
+      }
+    ],
+    "truncated": false
+  },
+  {
+    "id": "thread_033",
+    "subject": "GitHub: pull request review requested",
+    "messages": [
+      {
+        "id": "msg_033_01",
+        "rfc822_message_id": "<msg-033-01@mailbox.example>",
+        "sender": "notifications@github.example",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-13T00:00:00+05:30",
+        "body_text": "Rohan requested your review on pull request #42: Add mailbox search filters.",
+        "is_from_me": false
+      },
+      {
+        "id": "msg_033_02",
+        "rfc822_message_id": "<msg-033-02@mailbox.example>",
+        "sender": "nikhil.sharma@example.com",
+        "to": [
+          "notifications@github.example"
+        ],
+        "cc": [],
+        "date": "2026-10-13T05:00:00+05:30",
+        "body_text": "I reviewed the changes and left comments about pagination edge cases.",
+        "is_from_me": true
+      }
+    ],
+    "truncated": false
+  },
+  {
+    "id": "thread_034",
+    "subject": "GitHub: workflow failed",
+    "messages": [
+      {
+        "id": "msg_034_01",
+        "rfc822_message_id": "<msg-034-01@mailbox.example>",
+        "sender": "notifications@github.example",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-10T23:00:00+05:30",
+        "body_text": "The CI workflow failed on the test job. Check the logs for the failing test details.",
+        "is_from_me": false
+      },
+      {
+        "id": "msg_034_02",
+        "rfc822_message_id": "<msg-034-02@mailbox.example>",
+        "sender": "nikhil.sharma@example.com",
+        "to": [
+          "notifications@github.example"
+        ],
+        "cc": [],
+        "date": "2026-10-11T04:00:00+05:30",
+        "body_text": "The failure was caused by a missing test environment variable. I have fixed the workflow configuration.",
+        "is_from_me": true
+      }
+    ],
+    "truncated": false
+  },
+  {
+    "id": "thread_035",
+    "subject": "Travel booking confirmation",
+    "messages": [
+      {
+        "id": "msg_035_01",
+        "rfc822_message_id": "<msg-035-01@mailbox.example>",
+        "sender": "booking@rail-demo.example",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-08T22:00:00+05:30",
+        "body_text": "Your demo train booking is confirmed for 8 November. Booking reference: DEMO-PNR-7821.",
+        "is_from_me": false
+      }
+    ],
+    "truncated": false
+  },
+  {
+    "id": "thread_036",
+    "subject": "Travel schedule change",
+    "messages": [
+      {
+        "id": "msg_036_01",
+        "rfc822_message_id": "<msg-036-01@mailbox.example>",
+        "sender": "booking@rail-demo.example",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-07T09:00:00+05:30",
+        "body_text": "The departure time for your demo booking has changed from 08:10 to 08:35. Review the updated itinerary.",
+        "is_from_me": false
+      },
+      {
+        "id": "msg_036_02",
+        "rfc822_message_id": "<msg-036-02@mailbox.example>",
+        "sender": "nikhil.sharma@example.com",
+        "to": [
+          "booking@rail-demo.example"
+        ],
+        "cc": [],
+        "date": "2026-10-07T14:00:00+05:30",
+        "body_text": "I have seen the updated departure time. Thank you.",
+        "is_from_me": true
+      }
+    ],
+    "truncated": false
+  },
+  {
+    "id": "thread_037",
+    "subject": "Long thread: PolicyPulse retrieval evaluation",
+    "messages": [
+      {
+        "id": "msg_037_01",
+        "rfc822_message_id": "<msg-037-01@mailbox.example>",
+        "sender": "arjun.kapoor@example.com",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-05T08:00:00+05:30",
+        "body_text": "I reviewed the retrieval results. The current top-k setting is returning too many near-duplicate chunks. Can you compare reranking with a smaller candidate set?",
+        "is_from_me": false
+      },
+      {
+        "id": "msg_037_02",
+        "rfc822_message_id": "<msg-037-02@mailbox.example>",
+        "sender": "nikhil.sharma@example.com",
+        "to": [
+          "arjun.kapoor@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-05T13:00:00+05:30",
+        "body_text": "I will compare the current pipeline against a smaller candidate set and record precision at k.",
+        "is_from_me": true
+      },
+      {
+        "id": "msg_037_03",
+        "rfc822_message_id": "<msg-037-03@mailbox.example>",
+        "sender": "arjun.kapoor@example.com",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-05T18:00:00+05:30",
+        "body_text": "Could you also separate failures caused by chunking from failures caused by ranking?",
+        "is_from_me": false
+      },
+      {
+        "id": "msg_037_04",
+        "rfc822_message_id": "<msg-037-04@mailbox.example>",
+        "sender": "nikhil.sharma@example.com",
+        "to": [
+          "arjun.kapoor@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-05T23:00:00+05:30",
+        "body_text": "Yes. I will tag each failed query by likely cause and include representative examples.",
+        "is_from_me": true
+      },
+      {
+        "id": "msg_037_05",
+        "rfc822_message_id": "<msg-037-05@mailbox.example>",
+        "sender": "arjun.kapoor@example.com",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-06T04:00:00+05:30",
+        "body_text": "Please include latency as well; the reranker may improve relevance but increase response time.",
+        "is_from_me": false
+      },
+      {
+        "id": "msg_037_06",
+        "rfc822_message_id": "<msg-037-06@mailbox.example>",
+        "sender": "nikhil.sharma@example.com",
+        "to": [
+          "arjun.kapoor@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-06T09:00:00+05:30",
+        "body_text": "Understood. I will report relevance and latency together.",
+        "is_from_me": true
+      }
+    ],
+    "truncated": false
+  },
+  {
+    "id": "thread_038",
+    "subject": "Long thread: Internship interview preparation",
+    "messages": [
+      {
+        "id": "msg_038_01",
+        "rfc822_message_id": "<msg-038-01@mailbox.example>",
+        "sender": "priya.mehra@talentbridge.example",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-03T07:00:00+05:30",
+        "body_text": "Your interview panel will focus on Python fundamentals, API design, and practical debugging. Please confirm receipt.",
+        "is_from_me": false
+      },
+      {
+        "id": "msg_038_02",
+        "rfc822_message_id": "<msg-038-02@mailbox.example>",
+        "sender": "nikhil.sharma@example.com",
+        "to": [
+          "priya.mehra@talentbridge.example"
+        ],
+        "cc": [],
+        "date": "2026-10-03T12:00:00+05:30",
+        "body_text": "Received, thank you. I will prepare examples covering async APIs and testing.",
+        "is_from_me": true
+      },
+      {
+        "id": "msg_038_03",
+        "rfc822_message_id": "<msg-038-03@mailbox.example>",
+        "sender": "priya.mehra@talentbridge.example",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-03T17:00:00+05:30",
+        "body_text": "The panel has added a short system-design discussion. No preparation document is required.",
+        "is_from_me": false
+      },
+      {
+        "id": "msg_038_04",
+        "rfc822_message_id": "<msg-038-04@mailbox.example>",
+        "sender": "nikhil.sharma@example.com",
+        "to": [
+          "priya.mehra@talentbridge.example"
+        ],
+        "cc": [],
+        "date": "2026-10-03T22:00:00+05:30",
+        "body_text": "Thanks for the clarification. I will be ready for the system-design discussion.",
+        "is_from_me": true
+      }
+    ],
+    "truncated": false
+  },
+  {
+    "id": "thread_039",
+    "subject": "Long thread: Studio booking platform feedback",
+    "messages": [
+      {
+        "id": "msg_039_01",
+        "rfc822_message_id": "<msg-039-01@mailbox.example>",
+        "sender": "maya@brightstudio.example",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-01T06:00:00+05:30",
+        "body_text": "The booking flow looks good, but users should see availability before entering their details.",
+        "is_from_me": false
+      },
+      {
+        "id": "msg_039_02",
+        "rfc822_message_id": "<msg-039-02@mailbox.example>",
+        "sender": "nikhil.sharma@example.com",
+        "to": [
+          "maya@brightstudio.example"
+        ],
+        "cc": [],
+        "date": "2026-10-01T11:00:00+05:30",
+        "body_text": "Agreed. I will move availability lookup ahead of the renter form.",
+        "is_from_me": true
+      },
+      {
+        "id": "msg_039_03",
+        "rfc822_message_id": "<msg-039-03@mailbox.example>",
+        "sender": "maya@brightstudio.example",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-01T16:00:00+05:30",
+        "body_text": "Please also show the cancellation policy before the final confirmation.",
+        "is_from_me": false
+      },
+      {
+        "id": "msg_039_04",
+        "rfc822_message_id": "<msg-039-04@mailbox.example>",
+        "sender": "nikhil.sharma@example.com",
+        "to": [
+          "maya@brightstudio.example"
+        ],
+        "cc": [],
+        "date": "2026-10-01T21:00:00+05:30",
+        "body_text": "I will add the policy summary to the confirmation step and ask users to acknowledge it.",
+        "is_from_me": true
+      }
+    ],
+    "truncated": false
+  },
+  {
+    "id": "thread_040",
+    "subject": "Reminder: submit project progress update",
+    "messages": [
+      {
+        "id": "msg_040_01",
+        "rfc822_message_id": "<msg-040-01@mailbox.example>",
+        "sender": "project-office@msit.example",
+        "to": [
+          "nikhil.sharma@example.com"
+        ],
+        "cc": [],
+        "date": "2026-10-12T14:00:00+05:30",
+        "body_text": "Please submit a short progress update for your current project by Thursday. Include completed work, blockers, and the next milestone.",
+        "is_from_me": false
+      },
+      {
+        "id": "msg_040_02",
+        "rfc822_message_id": "<msg-040-02@mailbox.example>",
+        "sender": "nikhil.sharma@example.com",
+        "to": [
+          "project-office@msit.example"
+        ],
+        "cc": [],
+        "date": "2026-10-12T17:00:00+05:30",
+        "body_text": "I will submit the update by Wednesday evening. The current milestone is the backend integration, and there are no major blockers.",
+        "is_from_me": true
+      }
+    ],
+    "truncated": false
+  }
+]
