@@ -13,7 +13,7 @@ from ai_pipeline.config import get_config
 
 config = get_config()
 
-def format_tools_for_agents(mcp_tools : list) -> list[Tool] :
+def format_tools_for_agent(mcp_tools : list) -> list[Tool] :
     tools = []
     
     for tool_def in mcp_tools :

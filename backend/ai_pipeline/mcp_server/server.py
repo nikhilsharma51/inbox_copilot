@@ -1,10 +1,11 @@
+import argparse
 import os
 import sys
 from typing import List, Optional
 
-from backend.ai_pipeline.mcp_server.roles import VALID_ROLES, get_tools_for_role
 from fastmcp import FastMCP
 
+from ai_pipeline.mcp_server.roles import VALID_ROLES, get_tools_for_role
 from ai_pipeline.mcp_server.backend.fake import FakeBackend
 
 
@@ -26,7 +27,7 @@ class MCPServer :
 
         if backend_type == "fake":
             self.backend = FakeBackend()
-        else 
+        else:
             raise ValueError(f"Unknown backend : {backend_type}")
 
         self._register_tools()
@@ -160,7 +161,7 @@ def main():
     args = parser.parse_args()
 
     try:
-        server = MCPServer(args.role, args.backend)
+        server = MCPServer(args.backend, args.role)
         import asyncio
         asyncio.run(server.run())
     except Exception as e:
