@@ -10,17 +10,7 @@ from ai_pipeline.mcp_server.backend.fake import FakeBackend
 
 
 class MCPServer :
-    """MCP server with role-based tool registration."""
     def __init__(self, backend_type : str , role : str, access_token : Optional[str] = None) :
-        """
-        Initialize MCP server.
-
-        Args:
-        role: One of: sync, categorizer, drafter, inspector, sender
-        backend_type: "fake" or "gmail"
-        access_token: Gmail access token (required for Gmail backend)
-        """
-
         self.role = role 
         self.backend_type = backend_type
         self.app = FastMCP("inbox-copilot-mcp")
@@ -33,7 +23,6 @@ class MCPServer :
         self._register_tools()
 
     def _register_tools(self):
-        """Register tools allowed for this role."""
 
         allowed_tools = get_tools_for_role(self.role)
 
@@ -44,19 +33,6 @@ class MCPServer :
                 max_results : int = 20,
                 page_token: Optional[str] = None
             )-> dict :
-
-                """
-                List threads matching query.
-
-                Args:
-                query: Search query (case-insensitive)
-                max_results: Max threads to return (1-25)
-                page_token: Pagination token
-
-                Returns:
-                {threads: [...], next_page_token: "..."}
-                """
-
                 try:
                     results , next_token = await self.backend.list_threads(
                         query , max_results , page_token
@@ -71,15 +47,6 @@ class MCPServer :
         if "get_thread" in allowed_tools :
             @self.app.tool()
             async def get_thread(thread_id : str) -> dict:
-                """
-                Get full thread by ID.
-
-                Args:
-                thread_id: ID of thread to fetch
-
-                Returns:
-                Thread object with all messages
-                """
 
                 try : 
                     thread = await self.backend.get_thread(thread_id)
@@ -96,19 +63,6 @@ class MCPServer :
                 to: Optional[List[str]] = None,
                 cc: Optional[List[str]] = None,
             ) -> dict:
-                """
-                Create a draft reply.
-
-                Args:
-                    thread_id: ID of thread to reply in
-                    body: Draft body text
-                    subject: Subject (auto-generated if not provided)
-                    to: Recipients (auto-detected from thread if not provided)
-                    cc: CC recipients
-
-                Returns:
-                    Created draft object
-                """
                 try:
                     draft = await self.backend.create_draft(
                         thread_id, body, subject, to, cc
@@ -123,27 +77,15 @@ class MCPServer :
                 draft_id: str,
                 approval_token: Optional[str] = None
             ) -> dict:
-                """
-                Send a draft.
-
-                Args:
-                    draft_id: ID of draft to send
-                    approval_token: Approval token from backend (for verification)
-
-                Returns:
-                    Message ID
-                """
                 try:
                     message_id = await self.backend.send_draft(draft_id)
                     return {"message_id": message_id}
                 except Exception as e:
                     return {"error": str(e)}
     async def run(self):
-        """Run the server."""
         await self.app.run(transport="stdio")
 
 def main():
-    """CLI entry point."""
     parser = argparse.ArgumentParser(description="Inbox Copilot MCP Server")
     parser.add_argument(
         "--role",

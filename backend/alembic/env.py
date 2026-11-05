@@ -1,5 +1,3 @@
-"""Alembic migration environment configuration for async SQLAlchemy."""
-
 import asyncio
 from logging.config import fileConfig
 
@@ -11,10 +9,8 @@ from alembic import context
 from app.config import settings
 from app.db.models import Base
 
-# Alembic Config object
 config = context.config
 
-# Set up logging
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
@@ -26,7 +22,6 @@ target_metadata = Base.metadata
 
 
 def run_migrations_offline() -> None:
-    """Run migrations in 'offline' mode (without live DB)."""
     url = config.get_main_option("sqlalchemy.url")
     context.configure(
         url=url,
@@ -40,10 +35,8 @@ def run_migrations_offline() -> None:
 
 
 def do_run_async_migrations(engine: Connection) -> None:
-    """Run async migrations."""
 
     def upgrade() -> None:
-        """Execute upgrade migration."""
         with engine.begin() as connection:
             context.configure(connection=connection, target_metadata=target_metadata)
             with context.begin_transaction():
@@ -53,7 +46,6 @@ def do_run_async_migrations(engine: Connection) -> None:
 
 
 async def run_migrations_online() -> None:
-    """Run migrations in 'online' mode (with live DB connection)."""
     engine = create_async_engine(
         config.get_main_option("sqlalchemy.url"),
         poolclass=pool.NullPool,

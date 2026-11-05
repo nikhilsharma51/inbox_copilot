@@ -35,5 +35,4 @@ class AIConfig:
 
 
 def get_config() -> AIConfig:
-    """Get AI configuration."""
     return AIConfig()

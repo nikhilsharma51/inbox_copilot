@@ -91,7 +91,6 @@ async def run_agent(
         
         
 def main():
-    """CLI entry point."""
     parser = argparse.ArgumentParser(description="Inbox Copilot Terminal Agent")
     parser.add_argument(
         "--backend",

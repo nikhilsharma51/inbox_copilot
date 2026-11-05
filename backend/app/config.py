@@ -1,10 +1,3 @@
-"""
-Application configuration using Pydantic v2 settings.
-
-All environment variables are validated at startup. The app refuses to boot
-if required keys are missing or invalid.
-"""
-
 import base64
 from typing import Literal
 
@@ -12,8 +5,6 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    """Application settings loaded from environment variables."""
-
     environment: Literal["dev", "staging", "prod"] = "dev"
 
     database_url: str  

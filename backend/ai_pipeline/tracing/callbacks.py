@@ -10,8 +10,6 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class Step:
-    """A single step in agent execution."""
-
     type: str  # "llm", "tool", "guard", etc.
     name: str
     input_data: Dict[str, Any]
@@ -23,7 +21,6 @@ class Step:
     timestamp: float = field(default_factory=time.time)
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dict for storage."""
         return {
             "type": self.type,
             "name": self.name,
@@ -38,7 +35,6 @@ class Step:
 
 class TracingCallback(BaseCallbackHandler):
     def __init__(self):
-        """Initialize callback."""
         self.steps: List[Step] = []
         self.current_step: Optional[Step] = None
         self.total_tokens_in = 0
@@ -58,7 +54,6 @@ class TracingCallback(BaseCallbackHandler):
         )
 
     def on_llm_end(self, response: LLMResult, **kwargs: Any) -> None:
-        """Called when LLM ends."""
         if self.current_step:
             # Extract tokens
             if hasattr(response, 'llm_output') and isinstance(response.llm_output, dict):
