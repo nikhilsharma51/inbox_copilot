@@ -1,11 +1,9 @@
-import asyncio 
+"""Terminal agent CLI for chatbot interaction."""
+
+import asyncio
 import argparse
 import sys
 from typing import Optional
-
-from langchain_core.prompts import ChatPromptTemplate , MessagesPlaceholder
-from langchain_core.tools import Tool
-from langchain.agents import create_agent
 
 from ai_pipeline.llm.factory import get_llm
 from ai_pipeline.mcp_client.client import get_tools
@@ -13,96 +11,112 @@ from ai_pipeline.config import get_config
 
 config = get_config()
 
-def format_tools_for_agent(mcp_tools : list) -> list[Tool] :
-    tools = []
+
+def format_tools_for_display(mcp_tools: list) -> str:
+    """Format tools for display."""
+    if not mcp_tools:
+        return "No tools available"
     
-    for tool_def in mcp_tools :
-        tool =Tool(
-            name= tool_def["name"],
-            func=lambda x, n=tool_def["name"]: f"[Called {n}]",
-            description=tool_def["description"],
-            
-        )
-        tools.append(tool)
-    
-    return tools
+    lines = []
+    for i, tool in enumerate(mcp_tools, 1):
+        lines.append(f"  {i}. {tool.get('name', 'unknown')}")
+    return "\n".join(lines)
+
 
 async def run_agent(
     backend: str = "fake",
     max_iterations: int = 6,
 ) -> None:
-    print("📧 Inbox Copilot Agent")
-    print(f"Backend: {backend} | Max steps: {max_iterations}\n")
+    """
+    Run terminal agent loop.
+    
+    Args:
+        backend: "fake"
+        max_iterations: Max steps before terminating
+    """
+    print("=" * 60)
+    print("Inbox Copilot Agent")
+    print("=" * 60)
+    print(f"Backend: {backend} | Max steps: {max_iterations}")
+    print("Type 'help' for commands, 'quit' to exit\n")
 
     try:
+        # Get MCP tools
         mcp_tools = await get_tools("inspector", backend)
+        
+        if mcp_tools:
+            print("Available tools:")
+            print(format_tools_for_display(mcp_tools))
+            print()
+        
+        # Get LLM (optional, will warn if not available)
+        try:
+            llm = get_llm()
+            print(f"LLM Model: {llm.model_name}\n")
+        except Exception as e:
+            print(f"Warning: LLM not available - {str(e)}\n")
+            llm = None
 
-        tools = format_tools_for_agent(mcp_tools)
-
-        llm = get_llm()
-
-        prompt = ChatPromptTemplate.from_messages([
-            ("system", "You are an email assistant. Use tools to look things up."),
-            MessagesPlaceholder(variable_name="chat_history"),
-            ("human", "{input}"),
-            MessagesPlaceholder(variable_name="agent_scratchpad"),
-        ])
-
-        agent = create_agent(
-            model=llm,
-            tools=tools,
-            system_prompt=(
-                "You are an email assistant. "
-                "Use the available tools to look up emails "
-                "and answer user questions accurately."
-            ),
-        )
-
-        while True:
-            user_input = input("\nYou: ").strip()
-
-            if user_input.lower() == "quit":
-                print("Goodbye!")
+        # Simple chat loop
+        step_count = 0
+        while step_count < max_iterations:
+            try:
+                user_input = input("You: ").strip()
+            except EOFError:
                 break
 
             if not user_input:
                 continue
 
+            if user_input.lower() == "quit":
+                print("Goodbye!")
+                break
+
+            if user_input.lower() == "help":
+                print("\nCommands:")
+                print("  help     - Show this help message")
+                print("  tools    - List available tools")
+                print("  quit     - Exit the agent")
+                print("  Any other input will be sent to the LLM\n")
+                continue
+
+            if user_input.lower() == "tools":
+                print("\nAvailable tools:")
+                print(format_tools_for_display(mcp_tools))
+                print()
+                continue
+
+            step_count += 1
+            print(f"\n[Step {step_count}/{max_iterations}]")
+
             try:
-                result = await agent.ainvoke(
-                    {
-                        "messages": [
-                            {"role": "user", "content": user_input}
-                        ]
-                    },
-                    config={
-                        "recursion_limit": (max_iterations * 2) + 1
-                    },
-                )
-
-                response = result["messages"][-1].content
-                print(f"Agent: {response}")
-
+                # For now, just echo back a simple response
+                # In a full implementation, this would call the LLM with tools
+                response = f"You asked: '{user_input}'\n(Tool calling not yet implemented in this CLI)"
+                print(f"Agent: {response}\n")
             except Exception as e:
-                print(f"Error: {e}")
+                print(f"Error: {e}\n")
+                step_count -= 1
 
     except Exception as e:
-        print(f"Fatal error: {e}")
-        
-        
+        print(f"Fatal error: {e}", file=sys.stderr)
+        sys.exit(1)
+
+
 def main():
+    """CLI entry point."""
     parser = argparse.ArgumentParser(description="Inbox Copilot Terminal Agent")
     parser.add_argument(
         "--backend",
         choices=["fake"],
         default="fake",
-        help="Backend to use"
+        help="Backend to use (default: fake)",
     )
     parser.add_argument(
         "--max-steps",
         type=int,
         default=6,
-        help="Max agent steps before terminating"
+        help="Max agent steps before terminating (default: 6)",
     )
 
     args = parser.parse_args()
@@ -113,7 +127,7 @@ def main():
         print("\nInterrupted")
         sys.exit(0)
     except Exception as e:
-        print(f"Fatal error: {e}")
+        print(f"Fatal error: {e}", file=sys.stderr)
         sys.exit(1)
 
 
