@@ -62,7 +62,6 @@ class User(Base):
     )
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
-    # Relationships
     sessions: Mapped[list["Session"]] = relationship("Session", back_populates="user")
     mailboxes: Mapped[list["Mailbox"]] = relationship("Mailbox", back_populates="user")
     audit_logs: Mapped[list["AuditLog"]] = relationship("AuditLog", back_populates="user")
@@ -72,8 +71,6 @@ class User(Base):
 
 
 class Session(Base):
-    """Server-side session for authenticated users."""
-
     __tablename__ = "sessions"
 
     id: Mapped[str] = mapped_column(String(256), primary_key=True)  # Hashed session ID
@@ -98,7 +95,6 @@ class Session(Base):
 
 
 class Mailbox(Base):
-    """Gmail mailbox connection per user."""
 
     __tablename__ = "mailboxes"
 
@@ -143,7 +139,6 @@ class Mailbox(Base):
 
 
 class Category(Base):
-    """Email category for filtering/classification."""
 
     __tablename__ = "categories"
 
@@ -169,7 +164,6 @@ class Category(Base):
 
 
 class Job(Base):
-    """Background job for async work (sync, classify, draft, etc.)."""
 
     __tablename__ = "jobs"
 
@@ -233,7 +227,6 @@ class JobEvent(Base):
 
 
 class AuditLog(Base):
-    """Immutable append-only audit log (cannot be updated or deleted)."""
 
     __tablename__ = "audit_log"
 
@@ -272,3 +265,226 @@ class SystemFlag(Base):
 
     def __repr__(self) -> str:
         return f"<SystemFlag(key={self.key})>"
+
+class Thread(Base):
+    """Email thread with classification status."""
+
+    __tablename__ = "threads"
+
+    id: Mapped[str] = mapped_column(
+        PG_UUID(as_uuid=True),
+        primary_key=True,
+        server_default=func.gen_random_uuid()
+    )
+    mailbox_id: Mapped[str] = mapped_column(
+        PG_UUID(as_uuid=True),
+        ForeignKey("mailboxes.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True
+    )
+    gmail_thread_id: Mapped[str] = mapped_column(String(255), nullable=False)
+
+    subject: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    snippet: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    participants: Mapped[list[dict]] = mapped_column(JSON, default=list)
+
+    last_message_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True
+    )
+    message_count: Mapped[int] = mapped_column(default=0)
+    content_hash: Mapped[str | None] = mapped_column(String(64), nullable=True)
+
+    classified_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True
+    )
+    class_status: Mapped[str] = mapped_column(
+        String(50),
+        default="unreviewed",
+        index=True
+    )
+    category_id: Mapped[str | None] = mapped_column(
+        PG_UUID(as_uuid=True),
+        ForeignKey("categories.id", ondelete="SET NULL"),
+        nullable=True
+    )
+
+    priority: Mapped[int | None] = mapped_column(default=None)  # Range: 1-4
+    confidence: Mapped[float | None] = mapped_column(default=None)  # Range: 0.0-1.0
+    summary: Mapped[str | None] = mapped_column(String(160), nullable=True)
+    needs_reply: Mapped[bool] = mapped_column(default=False)
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False
+    )
+
+    __table_args__ = (
+        UniqueConstraint(
+            "mailbox_id",
+            "gmail_thread_id",
+            name="uq_thread_mailbox_gmail_id"
+        ),
+        Index("idx_threads_mailbox_classified", "mailbox_id", "classified_at"),
+        Index("idx_threads_mailbox_class_status", "mailbox_id", "class_status"),
+        Index("idx_threads_mailbox_category", "mailbox_id", "category_id"),
+    )
+
+    def __repr__(self) -> str:
+        return f"<Thread(id={self.id}, subject={self.subject})>"
+
+
+class AgentRun(Base):
+    """Record of LLM executions for auditing and usage tracking."""
+
+    __tablename__ = "agent_runs"
+
+    id: Mapped[str] = mapped_column(
+        PG_UUID(as_uuid=True),
+        primary_key=True,
+        server_default=func.gen_random_uuid()
+    )
+    user_id: Mapped[str | None] = mapped_column(
+        PG_UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True
+    )
+    mailbox_id: Mapped[str] = mapped_column(
+        PG_UUID(as_uuid=True),
+        ForeignKey("mailboxes.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True
+    )
+    thread_id: Mapped[str | None] = mapped_column(
+        PG_UUID(as_uuid=True),
+        ForeignKey("threads.id", ondelete="SET NULL"),
+        nullable=True
+    )
+
+    kind: Mapped[str] = mapped_column(String(50), nullable=False)
+    model: Mapped[str] = mapped_column(String(100), nullable=False)
+    prompt_version: Mapped[str] = mapped_column(String(50), nullable=False)
+
+    input_tokens: Mapped[int] = mapped_column(default=0)
+    output_tokens: Mapped[int] = mapped_column(default=0)
+    latency_ms: Mapped[int] = mapped_column(default=0)
+
+    redacted_prompt: Mapped[str | None] = mapped_column(Text, nullable=True)
+    results: Mapped[dict] = mapped_column(JSON, default=dict)
+    error: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+        index=True
+    )
+
+    __table_args__ = (
+        Index("idx_agent_runs_user_mailbox", "user_id", "mailbox_id"),
+        Index("idx_agent_runs_kind", "kind"),
+    )
+
+    def __repr__(self) -> str:
+        return f"<AgentRun(id={self.id}, kind={self.kind}, model={self.model})>"
+
+
+class UsageDaily(Base):
+    """Track daily token usage and email activity per user."""
+
+    __tablename__ = "usage_daily"
+
+    id: Mapped[str] = mapped_column(
+        PG_UUID(as_uuid=True),
+        primary_key=True,
+        server_default=func.gen_random_uuid()
+    )
+    user_id: Mapped[str] = mapped_column(
+        PG_UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True
+    )
+
+    date: Mapped[str] = mapped_column(String(10), nullable=False)  # YYYY-MM-DD
+    tokens_in: Mapped[int] = mapped_column(default=0)
+    tokens_out: Mapped[int] = mapped_column(default=0)
+    sends_count: Mapped[int] = mapped_column(default=0)
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False
+    )
+
+    __table_args__ = (
+        UniqueConstraint("user_id", "date", name="uq_usage_user_date"),
+        Index("idx_usage_user_date", "user_id", "date"),
+    )
+
+    def __repr__(self) -> str:
+        return f"<UsageDaily(user_id={self.user_id}, date={self.date})>"
+
+
+class Correction(Base):
+    """Store user corrections to improve email classification."""
+
+    __tablename__ = "corrections"
+
+    id: Mapped[str] = mapped_column(
+        PG_UUID(as_uuid=True),
+        primary_key=True,
+        server_default=func.gen_random_uuid()
+    )
+    user_id: Mapped[str] = mapped_column(
+        PG_UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True
+    )
+    thread_id: Mapped[str] = mapped_column(
+        PG_UUID(as_uuid=True),
+        ForeignKey("threads.id", ondelete="CASCADE"),
+        nullable=False
+    )
+
+    predicted_category_id: Mapped[str | None] = mapped_column(
+        PG_UUID(as_uuid=True),
+        ForeignKey("categories.id", ondelete="SET NULL"),
+        nullable=True
+    )
+    corrected_category_id: Mapped[str] = mapped_column(
+        PG_UUID(as_uuid=True),
+        ForeignKey("categories.id", ondelete="CASCADE"),
+        nullable=False
+    )
+    reason: Mapped[str | None] = mapped_column(String(500), nullable=True)
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+        index=True
+    )
+
+    __table_args__ = (
+        Index("idx_corrections_user_thread", "user_id", "thread_id"),
+    )
+
+    def __repr__(self) -> str:
+        return f"<Correction(id={self.id}, user_id={self.user_id})>"

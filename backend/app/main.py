@@ -28,11 +28,6 @@ class ReadyResponse(BaseModel):
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """
-    Application lifespan context manager.
-
-    Handles startup and shutdown logic.
-    """
     logger.info(
         "app.startup",
         environment=settings.environment,
@@ -46,7 +41,6 @@ async def lifespan(app: FastAPI):
 
 
 def create_app() -> FastAPI:
-    """Create and configure the FastAPI application."""
 
     configure_logging(settings.log_level, settings.log_format)
 
@@ -81,20 +75,10 @@ def create_app() -> FastAPI:
 
     @app.get("/healthz", tags=["health"])
     async def healthz() -> HealthResponse:
-        """
-        Health check endpoint.
-
-        Returns 200 OK if the process is up.
-        """
         return HealthResponse(status="ok", environment=settings.environment)
 
     @app.get("/readyz", tags=["health"])
     async def readyz() -> ReadyResponse:
-        """
-        Readiness check endpoint.
-
-        Returns 200 OK if the app is ready to handle requests (DB is reachable).
-        """
         return ReadyResponse(status="ok", database="ok")
 
     logger.info("app.created", environment=settings.environment)

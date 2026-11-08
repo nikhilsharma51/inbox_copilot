@@ -1,12 +1,9 @@
-"""Configuration for AI pipeline."""
-
 import os
 from pathlib import Path
 from typing import Literal
 
 from dotenv import load_dotenv
 
-# Load environment variables from .env file
 env_file = Path(__file__).parent.parent.parent / ".env"
 if env_file.exists():
     load_dotenv(env_file)
@@ -15,7 +12,6 @@ if env_file.exists():
 class AIConfig:
     """AI pipeline configuration - reads from environment variables."""
 
-    # Models for different tasks (from env or defaults)
     CLASSIFICATION_MODEL = os.getenv(
         "GROQ_MODEL_CLASSIFICATION", "llama-3.1-8b-instant"
     )
@@ -34,7 +30,6 @@ class AIConfig:
         "GROQ_MODEL_JUDGE", "llama-3.3-70b-versatile"
     )
 
-    # Rate limits (from env or defaults)
     RATE_LIMIT_PER_MINUTE = int(
         os.getenv("AI_RATE_LIMIT_PER_MINUTE", "30")
     )
@@ -42,7 +37,6 @@ class AIConfig:
         os.getenv("AI_RATE_LIMIT_TOKENS_PER_MINUTE", "10000")
     )
 
-    # Token budgets (from env or defaults)
     TOKEN_BUDGET_CLASSIFICATION = int(
         os.getenv("AI_TOKEN_BUDGET_CLASSIFICATION", "600")
     )
@@ -53,7 +47,6 @@ class AIConfig:
         os.getenv("AI_TOKEN_BUDGET_DAILY", "100000")
     )
 
-    # Timeouts (from env or defaults)
     LLM_TIMEOUT_SECONDS = int(
         os.getenv("AI_LLM_TIMEOUT_SECONDS", "30")
     )
@@ -64,11 +57,9 @@ class AIConfig:
         os.getenv("AI_MCP_STARTUP_TIMEOUT_SECONDS", "5")
     )
 
-    # Versioning (from env or defaults)
     PROMPT_VERSION = os.getenv("AI_PROMPT_VERSION", "v1")
     MODEL_VERSION = os.getenv("AI_MODEL_VERSION", "phase-1")
 
-    # Feature flags (from env or defaults)
     ENABLE_STRUCTURED_OUTPUT = os.getenv(
         "AI_ENABLE_STRUCTURED_OUTPUT", "true"
     ).lower() == "true"
@@ -79,12 +70,28 @@ class AIConfig:
         os.getenv("AI_MAX_RETRIES_ON_429", "2")
     )
 
-    # Batch configuration (from env or defaults)
     BATCH_SIZE_CLASSIFICATION = int(
         os.getenv("AI_BATCH_SIZE_CLASSIFICATION", "5")
     )
 
 
+SYNC_BATCH_SIZE = 100
+SYNC_QUERY = "newer_than:30d"
+SYNC_STALE_LOCK_MINUTES = 10
+
+CLASSIFY_BATCH_SIZE = 5
+CLASSIFY_CONCURRENCY = 1  # Semaphore for API rate limiting
+TOKEN_BUDGET_PER_CLASSIFY = 600
+CONFIDENCE_THRESHOLD = 0.6
+
+TEXT_LIMIT_CHARS = 4000
+TEXT_LIMIT_TOKENS = 1000
+
+DAILY_TOKEN_BUDGET = 100000
+DAILY_SEND_LIMIT = 20
+
 def get_config() -> AIConfig:
     """Get AI configuration."""
     return AIConfig()
+
+

@@ -1,12 +1,3 @@
-"""
-Encrypt/decrypt secrets (like Gmail refresh tokens) with AES-256-GCM.
-
-Blob layout: key_version (1 byte) || nonce (12 bytes) || ciphertext + tag
-
-The `aad` (use the mailbox id bytes) ties a blob to one DB row, so a blob
-copied into another row fails to decrypt. This prevents token theft via DB tampering.
-"""
-
 import base64
 
 from cryptography.exceptions import InvalidTag
@@ -20,8 +11,6 @@ TAG_LEN = 16
 
 
 class CryptoError(Exception):
-    """Raised when encryption/decryption fails. Treat as 'needs reconnect'."""
-
     pass
 
 
@@ -52,19 +41,6 @@ def encrypt(plaintext: str, aad: bytes) -> bytes:
 
 
 def decrypt(blob: bytes, aad: bytes) -> str:
-    """
-    Decrypt blob using AES-256-GCM with associated authenticated data.
-
-    Args:
-        blob: Encrypted blob (version + nonce + ciphertext + tag)
-        aad: Associated authenticated data (must match what was used in encrypt)
-
-    Returns:
-        Decrypted plaintext (string)
-
-    Raises:
-        CryptoError: If decryption fails or AAD doesn't match
-    """
     try:
         if len(blob) < 1 + NONCE_LEN + TAG_LEN:
             raise CryptoError("Blob too short")
