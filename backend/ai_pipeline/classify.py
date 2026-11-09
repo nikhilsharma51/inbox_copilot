@@ -130,11 +130,6 @@ async def classify_batch(
     batch_size: int,
     session: AsyncSession
 ) -> Dict:
-    """
-    Classify a batch of unclassified threads.
-
-    Returns: {"classified": count}
-    """
 
     threads = await session.execute(
         select(Thread)

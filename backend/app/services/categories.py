@@ -18,7 +18,6 @@ async def create_category(
     color: Optional[str],
     session: AsyncSession
 ) -> Category:
-    """Create a new category."""
 
     if not (1 <= len(name) <= 50):
         raise ValueError("Name must be 1-50 characters")
@@ -61,7 +60,6 @@ async def list_categories(
     user_id: UUID,
     session: AsyncSession
 ) -> List[Category]:
-    """List all categories for a user."""
 
     result = await session.execute(
         select(Category)
@@ -122,7 +120,6 @@ async def archive_category(
     user_id: UUID,
     session: AsyncSession
 ) -> Category:
-    """Archive a category (soft delete)."""
 
     result = await session.execute(
         select(Category).where(
