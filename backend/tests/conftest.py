@@ -1,13 +1,15 @@
-"""Pytest configuration - load environment variables from .env before tests run."""
-
 import os
+import sys
 from pathlib import Path
 
 from dotenv import load_dotenv
 
-# Load .env from root directory
-root_dir = Path(__file__).parent.parent
-env_file = root_dir / ".env"
+backend_dir = Path(__file__).parent.parent
+env_file = backend_dir / ".env"
 
 if env_file.exists():
     load_dotenv(env_file)
+
+import importlib
+if 'app.config' in sys.modules:
+    importlib.reload(sys.modules['app.config'])
