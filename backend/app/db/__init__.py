@@ -73,6 +73,7 @@ class Thread(Base):
     needs_reply = Column(String, default="unknown")
     priority = Column(String, default="normal")
     confidence = Column(String, default="0.0")
+    tokens = Column(String, default="0")
     status = Column(String, default="unread")
     created_at = Column(DateTime(timezone=True), default=utcnow, nullable=False)
     updated_at = Column(DateTime(timezone=True), default=utcnow, onupdate=utcnow, nullable=False)
