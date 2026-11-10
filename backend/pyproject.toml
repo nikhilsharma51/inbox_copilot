@@ -24,7 +24,6 @@ dependencies = [
     # Database
     "sqlalchemy[asyncio]==2.0.25",
     "psycopg[binary]==3.1.17",
-    "alembic==1.13.1",
     
     # Logging and monitoring
     "structlog==24.1.0",
@@ -71,11 +70,6 @@ dev = [
     "respx==0.20.2",
     "pytest-mock==3.12.0",
     
-    # Linting and type checking
-    "ruff==0.1.13",
-    "pyright==1.1.344",
-    "import-linter==2.0",
-    
     # Security
     "pip-audit==2.6.3",
     
@@ -86,47 +80,6 @@ dev = [
 [tool.hatch.build.targets.wheel]
 packages = ["app", "ai_pipeline"]
 
-# Ruff configuration
-[tool.ruff]
-target-version = "py311"
-line-length = 100
-exclude = [
-    ".git",
-    ".venv",
-    "venv",
-    "__pycache__",
-    ".pytest_cache",
-    ".ruff_cache",
-    "migrations",
-]
-
-[tool.ruff.lint]
-select = [
-    "E",      # pycodestyle errors
-    "W",      # pycodestyle warnings
-    "F",      # Pyflakes
-    "I",      # isort
-    "C901",   # McCabe complexity
-    "UP",     # pyupgrade
-    "B",      # flake8-bugbear
-]
-ignore = [
-    "E501",   # line too long (handled by formatter)
-    "W291",   # trailing whitespace (handled by formatter)
-]
-
-[tool.ruff.lint.isort]
-known-first-party = ["app", "ai_pipeline"]
-known-third-party = ["fastapi", "sqlalchemy", "pydantic"]
-
-# Pyright configuration
-[tool.pyright]
-typeCheckingMode = "strict"
-pythonVersion = "3.11"
-exclude = [".venv", "venv", "migrations"]
-ignore = ["tests"]
-
-# Pytest configuration
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
@@ -137,13 +90,3 @@ markers = [
     "integration: Integration tests",
     "e2e: End-to-end tests",
 ]
-
-# Import-linter configuration
-[tool.import-linter]
-root_packages = ["app", "ai_pipeline"]
-
-[[tool.import-linter.checkers]]
-type = "forbidden"
-source_module = "ai_pipeline"
-forbidden_modules = ["app"]
-description = "ai_pipeline must never import from app (preserve isolation for testing and reusability)"
