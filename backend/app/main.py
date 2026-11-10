@@ -5,6 +5,7 @@ from fastapi.responses import PlainTextResponse
 
 from app.db import engine, Base
 from app.routes.auth import router as auth_router
+from app.routes.sync import router as sync_router
 
 
 @asynccontextmanager
@@ -22,6 +23,7 @@ def create_app() -> FastAPI:
     )
 
     app.include_router(auth_router)
+    app.include_router(sync_router)
 
     @app.get("/healthz", response_class=PlainTextResponse)
     async def healthz():
