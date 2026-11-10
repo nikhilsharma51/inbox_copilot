@@ -1,7 +1,9 @@
 import base64
 import html
+import json
 from datetime import datetime, timezone
 import logging
+from pathlib import Path
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -195,3 +197,83 @@ def get_valid_access_token(user: User) -> str:
         raise
     
     return creds.token
+
+
+class FakeGmail:
+    def __init__(self):
+        fixtures_path = Path(__file__).parent.parent / "data" / "fixtures.json"
+        with open(fixtures_path) as f:
+            self.data = json.load(f)
+        self.sent = []
+        self.thread_map = {t["thread_id"]: t for t in self.data["threads"]}
+
+    def list_threads(self, query: str = "newer_than:30d", max_results: int = 100):
+        threads = self.data["threads"][:max_results]
+        
+        output = []
+        for thread in threads:
+            first_message = thread["messages"][0]
+            snippet = first_message["body"][:100]
+            snippet_unescaped = html.unescape(snippet)
+            
+            output.append({
+                "thread_id": thread["thread_id"],
+                "subject": thread["subject"],
+                "sender": first_message["sender"],
+                "snippet": snippet_unescaped,
+                "date": first_message["date"],
+                "last_message_id": thread["messages"][-1]["message_id"],
+            })
+        
+        logger.info(f"Found {len(threads)} threads")
+        return output
+
+    def get_thread(self, thread_id: str, user_email: str = None):
+        thread = self.thread_map.get(thread_id)
+        if not thread:
+            return {"subject": "", "messages": []}
+        
+        messages = []
+        for msg in thread["messages"]:
+            is_from_me = False
+            if user_email:
+                is_from_me = user_email.lower() in msg["sender"].lower()
+            
+            date_obj = datetime.fromisoformat(msg["date"])
+            
+            messages.append({
+                "sender": msg["sender"],
+                "to": msg["to"],
+                "cc": msg["cc"],
+                "date": date_obj,
+                "message_id": msg["message_id"],
+                "body": msg["body"],
+                "is_from_me": is_from_me,
+            })
+        
+        logger.info(f"Retrieved thread {thread_id} with {len(messages)} messages")
+        
+        return {
+            "subject": thread["subject"],
+            "messages": messages,
+        }
+
+    def send_reply(self, thread_id: str, to: str, subject: str, body: str, in_reply_to: str = None, references: str = None):
+        self.sent.append({
+            "thread_id": thread_id,
+            "to": to,
+            "subject": subject,
+            "body": body,
+            "in_reply_to": in_reply_to,
+            "references": references,
+        })
+        
+        logger.info(f"Sent reply in thread {thread_id}")
+
+
+def get_mailbox(user: User):
+    if settings.mailbox_mode == "fake":
+        return FakeGmail()
+    else:
+        access_token = get_valid_access_token(user)
+        return GmailClient(access_token=access_token)
