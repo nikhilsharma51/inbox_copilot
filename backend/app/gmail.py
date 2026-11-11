@@ -83,6 +83,8 @@ class GmailClient:
             to = headers.get("to", "")
             cc = headers.get("cc", "")
             message_id = headers.get("message-id", "")
+            reply_to = headers.get("reply-to", "")
+            list_unsubscribe = headers.get("list-unsubscribe", "")
             
             body_text = self._extract_body(message.get("payload", {}))
             
@@ -98,6 +100,8 @@ class GmailClient:
                 "message_id": message_id,
                 "body": body_text,
                 "is_from_me": is_from_me,
+                "reply_to": reply_to,
+                "list_unsubscribe": list_unsubscribe,
             })
         
         logger.info(f"Retrieved thread {thread_id} with {len(messages)} messages")
@@ -249,6 +253,8 @@ class FakeGmail:
                 "message_id": msg["message_id"],
                 "body": msg["body"],
                 "is_from_me": is_from_me,
+                "reply_to": msg.get("reply_to", ""),
+                "list_unsubscribe": msg.get("list_unsubscribe", ""),
             })
         
         logger.info(f"Retrieved thread {thread_id} with {len(messages)} messages")
