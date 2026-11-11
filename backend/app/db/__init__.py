@@ -92,6 +92,8 @@ class Draft(Base):
     to_addr = Column(String, nullable=False)
     subject = Column(String, nullable=False)
     body = Column(Text, nullable=False)
+    instruction = Column(Text, nullable=True)
+    warnings = Column(Text, nullable=True)
     status = Column(String, default="draft")
     created_at = Column(DateTime(timezone=True), default=utcnow, nullable=False)
     sent_at = Column(DateTime(timezone=True), nullable=True)
