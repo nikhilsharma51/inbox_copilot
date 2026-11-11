@@ -8,3 +8,9 @@ class Classification(BaseModel):
     priority: int
     confidence: float
     suspected_injection: bool = False
+
+
+class DraftOut(BaseModel):
+    subject: str
+    body: str
+    needs_info: list[str] = Field(default_factory=list)
