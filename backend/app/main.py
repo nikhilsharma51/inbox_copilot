@@ -8,6 +8,7 @@ from app.routes.auth import router as auth_router
 from app.routes.sync import router as sync_router
 from app.routes.classify import router as classify_router
 from app.routes.drafts import router as drafts_router
+from app.routes.chat import router as chat_router
 
 
 @asynccontextmanager
@@ -28,6 +29,7 @@ def create_app() -> FastAPI:
     app.include_router(sync_router)
     app.include_router(classify_router)
     app.include_router(drafts_router)
+    app.include_router(chat_router)
 
     @app.get("/healthz", response_class=PlainTextResponse)
     async def healthz():

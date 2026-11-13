@@ -5,6 +5,7 @@
 - langchain: 1.4.9
 - langchain-core: 1.7.6
 - langchain-groq: 1.1.3
+- langgraph: 1.2.20
 - groq: 0.37.1
 - pydantic: 2.13.5
 - python: 3.11.3
