@@ -207,3 +207,61 @@ async def list_drafts(thread_id: str, request: Request, db: Session = Depends(ge
         }
         for d in drafts
     ]
+
+
+@router.post("/drafts/{draft_id}/send")
+async def send_draft(draft_id: str, request: Request, db: Session = Depends(get_db)):
+    session_token = request.cookies.get("session")
+    
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not logged in")
+    
+    try:
+        user_id = _verify_session_cookie(session_token)
+    except HTTPException:
+        raise
+    
+    draft = db.query(Draft).filter(
+        Draft.id == draft_id,
+        Draft.user_id == user_id,
+        Draft.status == "draft"
+    ).first()
+    
+    if not draft:
+        raise HTTPException(status_code=404, detail="Draft not found or already sent")
+    
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    thread = db.query(Thread).filter(Thread.id == draft.thread_id).first()
+    if not thread:
+        raise HTTPException(status_code=404, detail="Thread not found")
+    
+    try:
+        mailbox = get_mailbox(user)
+    except ReconnectNeeded:
+        raise HTTPException(status_code=401, detail="Please reconnect your Gmail account")
+    
+    try:
+        from app.gmail import send_reply
+        send_reply(
+            mailbox,
+            thread.gmail_thread_id,
+            to=draft.to_addr,
+            subject=draft.subject,
+            body=draft.body
+        )
+    except Exception as e:
+        raise HTTPException(status_code=502, detail="Failed to send email")
+    
+    from datetime import datetime, timezone
+    draft.status = "sent"
+    draft.sent_at = datetime.now(timezone.utc)
+    db.commit()
+    
+    return {
+        "status": "sent",
+        "sent_at": draft.sent_at.isoformat()
+    }
+    

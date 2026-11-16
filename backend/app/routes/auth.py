@@ -222,6 +222,46 @@ async def disconnect(request: Request, db: Session = Depends(get_db)):
     return {"message": "Disconnected successfully"}
 
 
+@router.delete("/account")
+async def delete_account(request: Request, db: Session = Depends(get_db)):
+    session_token = request.cookies.get("session")
+    
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not logged in")
+    
+    try:
+        user_id = _verify_session_cookie(session_token)
+    except HTTPException:
+        raise
+    
+    user = db.query(User).filter(User.id == user_id).first()
+    
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    from app.db import Thread, Draft, Category
+    
+    db.query(Thread).filter(Thread.user_id == user_id).delete()
+    db.query(Draft).filter(Draft.user_id == user_id).delete()
+    db.query(Category).filter(Category.user_id == user_id).delete()
+    
+    if user.refresh_token_enc:
+        try:
+            refresh_token = decrypt_token(user.refresh_token_enc)
+            await _revoke_token(refresh_token)
+        except Exception:
+            pass
+    
+    db.delete(user)
+    db.commit()
+    
+    response_obj = {"status": "deleted"}
+    response = Response(content=str(response_obj), status_code=200)
+    response.delete_cookie("session", path="/", secure=False)
+    
+    return response
+
+
 async def _exchange_code_for_tokens(code: str) -> dict:
     async with httpx.AsyncClient() as client:
         response = await client.post(
