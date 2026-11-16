@@ -5,6 +5,7 @@ from app.db import SessionLocal, User, Thread
 from app.routes.auth import _verify_session_cookie, get_db
 from app.gmail import get_mailbox, ReconnectNeeded
 from app.sync import sync_threads
+from ai_pipeline.preprocess import clean_email
 
 router = APIRouter(prefix="/api", tags=["sync"])
 
@@ -65,6 +66,64 @@ async def list_threads(request: Request, db: Session = Depends(get_db)):
             "summary": t.summary,
             "status": t.status,
             "created_at": t.created_at,
+            "updated_at" : t.updated_at,
+            "needs_reply" : t.needs_reply,
+            "priority": t.priority,
+            "confidence" : t.confidence,
+            
         }
         for t in threads
     ]
+
+
+@router.get("/threads/{thread_id}")
+async def get_thread(thread_id : str , request : Request , db : Session = Depends(get_db)):
+    
+    session_token = request.cookies.get("session")
+    
+    if not session_token :
+        raise HTTPException(status_code=401, detail="Not logged in")
+    
+    try : 
+        user_id = _verify_session_cookie(session_token)
+    except HTTPException:
+            raise
+        
+    user = db.query(User).filter(User.id == user_id).first()
+    
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    gmail_thread = db.query(Thread).filter(
+        Thread.gmail_thread_id == thread_id
+    )
+    
+    return {
+        "id": Thread.id,
+        "subject": Thread.subject,
+        "sender": Thread.sender,
+        "summary": Thread.summary,
+        "status": Thread.status,
+        "needs_reply": Thread.needs_reply,
+        "priority": Thread.priority,
+        "confidence": Thread.confidence,
+        "messages": [
+            {
+                "sender": msg.sender,
+                "to": msg.to,
+                "date": msg.date,
+                "body": clean_email(msg.body),
+                "is_from_me": msg.sender == user.email
+            }
+            for msg in gmail_thread.messages
+        ],
+        "drafts": [
+            {
+                "id": d.id,
+                "subject": d.subject,
+                "body": d.body,
+                "status": d.status
+            }
+            for d in drafts
+        ]
+    }
