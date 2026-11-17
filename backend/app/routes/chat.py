@@ -1,13 +1,22 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Request, Depends
 from pydantic import BaseModel
+from sqlalchemy.orm import Session
 
-from app.auth import get_session_user
-from app.db import get_db
+from app.db import SessionLocal, User
+from app.routes.auth import _verify_session_cookie
 from app.gmail import get_mailbox, ReconnectNeeded
 from ai_pipeline.agent import run_agent
 from ai_pipeline.llm import call_with_retry
 
 router = APIRouter()
+
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
 class ChatRequest(BaseModel):
@@ -20,7 +29,22 @@ class ChatResponse(BaseModel):
 
 
 @router.post("/api/chat")
-def chat(req: ChatRequest, user=Depends(get_session_user), db=Depends(get_db)):
+def chat(req: ChatRequest, request: Request, db: Session = Depends(get_db)):
+    session_token = request.cookies.get("session")
+    
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not logged in")
+    
+    try:
+        user_id = _verify_session_cookie(session_token)
+    except HTTPException:
+        raise
+    
+    user = db.query(User).filter(User.id == user_id).first()
+    
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
     if not req.message or not req.message.strip():
         raise HTTPException(status_code=422, detail="message is required")
     

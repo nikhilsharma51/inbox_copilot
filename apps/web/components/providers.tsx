@@ -2,8 +2,8 @@
 'use client';
 
 import { ReactNode } from 'react';
-import { AuthProvider } from '@/lib/auth_context';
-import { ErrorBoundary } from '@/components/error_boundary';
+import { AuthProvider } from '@/lib/auth-context';
+import { ErrorBoundary } from '@/components/error-boundary';
 
 export default function Providers({
     children,

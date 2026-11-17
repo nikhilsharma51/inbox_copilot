@@ -1,20 +1,24 @@
 import Link from "next/link";
+import { api } from "@/lib/api";
+
+export const instant = false;
 
 export default async function LoginPage({
     searchParams,
 }: {
-    searchParams:  Promise<{error?: string}> ;
+    searchParams: Promise<{ error?: string }>;
 }) {
-
-    const {error} = await searchParams;
+    const { error } = await searchParams;
 
     const messages: Record<string, string> = {
         gmail_scopes:
             "Inbox Copilot needs Gmail access to work. Please try again and leave the Gmail boxes ticked.",
         access_denied: "Sign-in was cancelled. Try again.",
+        invalid_state: "Session validation failed. Please try again.",
+        token_exchange_failed: "Could not complete sign-in. Please try again.",
     };
 
-    const errorMessage = error ? messages[error] : undefined;
+    const errorMessage = error ? messages[error as keyof typeof messages] : undefined;
 
     return (
         <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#F7F6F0] px-5 py-12 text-[#263B32]">
@@ -74,7 +78,7 @@ export default async function LoginPage({
                     )}
 
                     <a
-                        href="/api/auth/google/login"
+                        href={api.auth.getLoginUrl()}
                         className="group flex min-h-12 w-full items-center justify-center gap-3 rounded-xl border border-[#DCDAD0] bg-white px-4 py-3 text-sm font-semibold text-[#263B32] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#AEB9AC] hover:bg-[#F7F8F4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#354F42] focus-visible:ring-offset-2"
                     >
                         <svg
