@@ -1,4 +1,4 @@
-<div align="center">
+ <div align="center">
 
 # Inbox Copilot
 
@@ -6,10 +6,11 @@
 
 Connect your Gmail account and Inbox Copilot classifies and summarizes your threads, flags the ones that need a reply, and writes draft responses from a one-line instruction. You review, edit, and press Send.
 
-Built with **FastAPI, LangChain, Groq, SQLAlchemy, and the Gmail API**, Inbox Copilot focuses on a small, readable AI pipeline and a human-in-the-loop approval step.
+Built with **FastAPI, LangChain, Groq, SQLAlchemy, Gmail API, and Next.js**, Inbox Copilot focuses on a small, readable AI pipeline and a human-in-the-loop approval step.
 
-![Stack](https://img.shields.io/badge/Stack-FastAPI%20%7C%20LangChain%20%7C%20Groq%20%7C%20Gmail%20API-2563eb)
+![Stack](https://img.shields.io/badge/Stack-FastAPI%20%7C%20LangChain%20%7C%20Groq%20%7C%20Next.js-2563eb)
 ![Python](https://img.shields.io/badge/Language-Python-3776AB)
+![Frontend](https://img.shields.io/badge/Frontend-Next.js%20%7C%20TypeScript-black)
 ![Status](https://img.shields.io/badge/Status-In%20development-orange)
 ![License](https://img.shields.io/badge/License-MIT-blue.svg)
 
@@ -19,7 +20,7 @@ Built with **FastAPI, LangChain, Groq, SQLAlchemy, and the Gmail API**, Inbox Co
 
 ## Project status
 
-Inbox Copilot is under active development. This table shows what works today.
+Inbox Copilot is under active development. This table shows the current implementation status.
 
 | Phase | Scope | Status |
 | --- | --- | --- |
@@ -28,7 +29,7 @@ Inbox Copilot is under active development. This table shows what works today.
 | 2 | Email classification pipeline (category, summary, needs-reply, priority) | In progress |
 | 3 | Reply drafting and the approval-gated Send button | Planned |
 | 4 | "Ask your inbox" LangChain agent | Planned |
-| 5 | Web interface (Next.js) | Planned |
+| 5 | Web interface (Next.js) and API integration | In progress |
 | 6 | Evaluation, safety tests, deployment | Planned |
 
 Everything described below as a feature is labelled with its status.
@@ -37,7 +38,9 @@ Everything described below as a feature is labelled with its status.
 
 Email triage is repetitive: read, decide whether it matters, decide whether it needs a reply, write the reply. Most of that work follows a pattern a language model can handle, but sending mail on your behalf is a decision that should stay with you.
 
-Inbox Copilot splits the work accordingly. A pipeline sorts and summarizes incoming mail, a drafter writes replies you can edit, and an agent answers questions about your inbox. Only one code path can send an email, and it requires you to click.
+Inbox Copilot splits the work accordingly. A pipeline sorts and summarizes incoming mail, a drafter writes replies you can edit, and an agent answers questions about your inbox. The frontend provides the interface for interacting with these capabilities while keeping consequential actions under your control.
+
+Only one code path can send an email, and it requires you to click.
 
 ## Key features
 
@@ -45,6 +48,7 @@ Inbox Copilot splits the work accordingly. A pipeline sorts and summarizes incom
 - **Encrypted credentials** (done) — the Google refresh token is encrypted at rest, and access tokens are minted on demand.
 - **AI classification** (in progress) — each thread gets a category, a short summary, a needs-reply flag, a priority, and a confidence score, using structured output validated by Pydantic.
 - **Low-confidence handling** (in progress) — uncertain or failed classifications go to a "needs review" state instead of being guessed.
+- **Web interface** (in progress) — Next.js frontend for interacting with the inbox and integrating backend API functionality.
 - **Reply drafting** (planned) — write a one-line instruction like "say yes, ask for the agenda" and get an editable draft.
 - **Human-approved sending** (planned) — drafts are only sent when you press Send on that exact draft.
 - **Inbox agent** (planned) — a LangChain agent with read-only search tools that answers questions like "Which emails need a reply?"
@@ -68,7 +72,7 @@ Groq's free tier has tight per-minute token limits. The pipeline classifies one 
 
 Before classification, email text is converted from HTML (hidden elements dropped), Unicode-normalized, stripped of quoted replies and signatures, and redacted for one-time codes and long digit sequences. Redaction happens before truncation.
 
-### One path to send (planned)
+### One path to send
 
 The agent has no send tool. Recipients are chosen by code from the thread, not by the model or the browser. A single API route sends a draft, and it flips the draft's status with a conditional update so a double click cannot send twice.
 
@@ -81,30 +85,57 @@ The agent has no send tool. Recipients are chosen by code from the thread, not b
 | Email | Gmail API, Google OAuth 2.0 |
 | Database and ORM | SQLAlchemy 2; SQLite locally, Neon (PostgreSQL) when deployed |
 | Security | Fernet-encrypted refresh tokens, signed session cookies |
-| Frontend (planned) | Next.js, React, TypeScript, Tailwind CSS |
+| Frontend | Next.js 16, React, TypeScript, Tailwind CSS |
+| Package manager | pnpm |
 | Testing | pytest, a fake mailbox, a fake LLM |
 
 ## Architecture
 
 ```text
-Gmail ---> sync ---> threads table
+                       Gmail
                          |
                          v
-        Pipeline: clean text -> classify (1 LLM call) -> category, summary,
-                                                         needs_reply, priority
+                    Sync service
+                         |
+                         v
+                    Threads table
+                         |
+                         v
+               Classification pipeline
+                         |
+              Clean -> Classify -> Validate
+                         |
+                         v
+             Category, Summary, Priority,
+                  Needs-reply flag
 
-You: "say yes, ask for the agenda"
-        |
-        v
-Drafter: thread + instruction -> 1 LLM call -> draft (recipients chosen by code)
-        |
-        v
-Review and edit ---> Send button ---> POST /api/drafts/{id}/send ---> Gmail
-
-You: "Which emails need a reply?"
-        |
-        v
-Agent (LangChain): search / list / read tools + save draft (cannot send)
+                         |
+                         v
+              FastAPI Backend
+                         |
+                    REST API
+                         |
+                         v
+               Next.js Frontend
+                         |
+              Browse and manage inbox
+                         |
+             +-----------+-----------+
+             |                       |
+             v                       v
+        Reply drafting          Inbox agent
+             |                       |
+             v                       v
+        Review and edit       Search / Read tools
+             |
+             v
+        Send button
+             |
+             v
+      POST /api/drafts/{id}/send
+             |
+             v
+           Gmail
 ```
 
 ## Run locally
@@ -112,17 +143,30 @@ Agent (LangChain): search / list / read tools + save draft (cannot send)
 ### Prerequisites
 
 - Python 3.12
+- Node.js (compatible with your Next.js version)
+- pnpm
 - A Google Cloud project with the Gmail API enabled and an OAuth client (Web application)
 - A Groq API key
 
-### Setup
+### Backend setup
 
 1. Clone the repository and create a virtual environment:
 
    ```bash
    cd backend
    python -m venv .venv
-   source .venv/bin/activate
+   ```
+
+   Activate it:
+
+   ```powershell
+   # Windows PowerShell
+   .venv\Scripts\Activate.ps1
+   ```
+
+   Install dependencies:
+
+   ```bash
    pip install -r requirements.txt
    ```
 
@@ -133,7 +177,7 @@ Agent (LangChain): search / list / read tools + save draft (cannot send)
    python -c "import secrets; print(secrets.token_urlsafe(48))"
    ```
 
-3. Create the local database (SQLite by default):
+3. Create the local database:
 
    ```bash
    python scripts/reset_db.py
@@ -151,7 +195,35 @@ Agent (LangChain): search / list / read tools + save draft (cannot send)
    MAILBOX_MODE=fake python -m ai_pipeline.cli classify
    ```
 
-> The web interface is not built yet; for now the project runs through the API and the command line. Never commit `.env`, token files, or real email data.
+### Frontend setup
+
+1. Navigate to the frontend directory:
+
+   ```bash
+   cd frontend
+   ```
+
+2. Install dependencies:
+
+   ```bash
+   pnpm install
+   ```
+
+3. Create `.env.local` and configure the backend API URL:
+
+   ```env
+   NEXT_PUBLIC_API_URL=http://localhost:8000
+   ```
+
+4. Start the development server:
+
+   ```bash
+   pnpm dev
+   ```
+
+The frontend will be available at `http://localhost:3000`.
+
+> Start the backend and frontend in separate terminals. Never commit `.env`, `.env.local`, token files, or real email data.
 
 ## Project structure
 
@@ -159,28 +231,34 @@ Agent (LangChain): search / list / read tools + save draft (cannot send)
 inbox-copilot/
 ├── backend/
 │   ├── app/
-│   │   ├── main.py          # FastAPI app
-│   │   ├── config.py        # Environment settings
-│   │   ├── db.py            # Engine and sessions
-│   │   ├── models.py        # Database tables
-│   │   ├── auth.py          # Google OAuth, sessions, token encryption
-│   │   ├── gmail.py         # Gmail client and fake mailbox
-│   │   ├── sync.py          # Gmail to database sync
-│   │   └── routes/          # API endpoints
-│   ├── ai_pipeline/         # All AI code
-│   │   ├── llm.py           # Model setup and retry on rate limits
-│   │   ├── schemas.py       # Pydantic output schemas
-│   │   ├── preprocess.py    # HTML cleanup, redaction, truncation
-│   │   ├── classify.py      # Classification
-│   │   ├── draft.py         # Draft writing (planned)
-│   │   ├── tools.py         # Agent tools (planned)
-│   │   ├── agent.py         # LangChain agent (planned)
-│   │   ├── cli.py           # Run the pipeline from the terminal
-│   │   └── prompts/         # Versioned prompt files
-│   ├── data/                # Synthetic fixtures and eval set
-│   ├── scripts/             # Database reset script
+│   │   ├── main.py
+│   │   ├── config.py
+│   │   ├── db.py
+│   │   ├── models.py
+│   │   ├── auth.py
+│   │   ├── gmail.py
+│   │   ├── sync.py
+│   │   └── routes/
+│   ├── ai_pipeline/
+│   │   ├── llm.py
+│   │   ├── schemas.py
+│   │   ├── preprocess.py
+│   │   ├── classify.py
+│   │   ├── draft.py
+│   │   ├── tools.py
+│   │   ├── agent.py
+│   │   ├── cli.py
+│   │   └── prompts/
+│   ├── data/
+│   ├── scripts/
 │   └── tests/
-├── web/                     # Next.js app (planned)
+│
+├── frontend/
+│   ├── app/                 # Next.js App Router
+│   ├── public/
+│   ├── package.json
+│   └── ...
+│
 └── docs/
 ```
 
@@ -191,13 +269,15 @@ inbox-copilot/
 - **Idempotent background work:** the classifier selects threads that are not yet classified and commits per thread, so re-runs and crashes are harmless.
 - **Code, not the model, controls anything with consequences:** recipients, sending, and per-user data access are enforced in server code.
 - **SQLite locally, Neon in production, no migration tool:** a four-table schema created at startup keeps development simple; schema changes are tracked by hand in `docs/schema-changes.md`.
+- **Separate frontend and backend:** Next.js handles the user interface while FastAPI owns authentication, data access, business logic, and AI processing.
 
 ## Roadmap
 
 - Finish the classification pipeline and a manual category-correction endpoint.
+- Build the Next.js inbox interface and integrate it with the FastAPI backend.
 - Draft generation and the approval-gated Send route.
 - The "ask your inbox" agent with read-only tools.
-- Web interface for browsing, drafting, and sending.
+- Complete the frontend experience for browsing, classifying, drafting, and sending emails.
 - A small labelled evaluation set with published accuracy, plus prompt-injection tests.
 - Deployment on Neon, Render, and Vercel.
 - Optional: expose the read-only tools through an MCP server.
