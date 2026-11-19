@@ -8,15 +8,15 @@ class TokenDecryptError(Exception):
 
 
 def encrypt_token(plain: str) -> str:
-    key = settings.get_encryption_key()
-    cipher = Fernet(key)
+    key_str = settings.token_encryption_key
+    cipher = Fernet(key_str.encode())
     encrypted = cipher.encrypt(plain.encode())
     return encrypted.decode()
 
 
 def decrypt_token(blob: str) -> str:
-    key = settings.get_encryption_key()
-    cipher = Fernet(key)
+    key_str = settings.token_encryption_key
+    cipher = Fernet(key_str.encode())
     try:
         decrypted = cipher.decrypt(blob.encode())
         return decrypted.decode()

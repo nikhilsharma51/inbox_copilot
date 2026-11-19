@@ -1,6 +1,9 @@
 import secrets
 import urllib.parse
 from datetime import datetime, timedelta, timezone
+from dotenv import load_dotenv
+
+load_dotenv()
 
 import httpx
 from fastapi import APIRouter, HTTPException, Request, Response, Depends, Cookie
@@ -14,6 +17,8 @@ from app.db import SessionLocal, User
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 GMAIL_SCOPES = [
+    "openid",
+    "https://www.googleapis.com/auth/userinfo.email",
     "https://www.googleapis.com/auth/gmail.readonly",
     "https://www.googleapis.com/auth/gmail.modify",
 ]
@@ -93,14 +98,20 @@ async def callback(code: str, state: str, request: Request, db: Session = Depend
     
     access_token = token_response.get("access_token")
     refresh_token = token_response.get("refresh_token")
+    id_token = token_response.get("id_token")
     
     if not access_token:
         raise HTTPException(status_code=400, detail="No access token in response")
     
-    user_info = await _get_user_info(access_token)
-    
-    if "error" in user_info:
-        raise HTTPException(status_code=400, detail=f"Failed to get user info: {user_info.get('error')}")
+    if id_token:
+        import jwt
+        user_info = jwt.decode(id_token, options={"verify_signature": False})
+    else:
+        user_info = await _get_user_info(access_token)
+        if "error" in user_info or "code" in user_info:
+            print(f"DEBUG - Token response: {token_response}")
+            print(f"DEBUG - User info error: {user_info}")
+            raise HTTPException(status_code=400, detail=f"Failed to get user info. Token may be invalid.")
     
     granted_scopes = token_response.get("scope", "").split()
     required_scopes = set(GMAIL_SCOPES)
@@ -121,8 +132,12 @@ async def callback(code: str, state: str, request: Request, db: Session = Depend
     user = db.query(User).filter(User.google_sub == google_sub).first()
     
     if not user:
-        user = User(google_sub=google_sub, email=email)
-        db.add(user)
+        user = db.query(User).filter(User.email == email).first()
+        if user:
+            user.google_sub = google_sub
+        else:
+            user = User(google_sub=google_sub, email=email)
+            db.add(user)
         db.commit()
         db.refresh(user)
     
@@ -133,7 +148,7 @@ async def callback(code: str, state: str, request: Request, db: Session = Depend
     session_token = _make_session_cookie(user.id)
     
     response = Response(status_code=302)
-    response.headers["Location"] = settings.frontend_origin
+    response.headers["Location"] = f"{settings.frontend_origin}/dashboard"
     
     response.set_cookie(
         "session",
@@ -292,9 +307,11 @@ async def _exchange_code_for_tokens(code: str) -> dict:
 async def _get_user_info(access_token: str) -> dict:
     async with httpx.AsyncClient() as client:
         response = await client.get(
-            "https://www.googleapis.com/oauth2/v2/userinfo",
+            "https://www.googleapis.com/oauth2/v3/userinfo",
             headers={"Authorization": f"Bearer {access_token}"},
         )
+        if response.status_code != 200:
+            return {"error": response.json()}
         return response.json()
 
 
