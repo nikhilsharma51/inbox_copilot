@@ -4,6 +4,7 @@ from datetime import datetime, timedelta, timezone
 
 import httpx
 from fastapi import APIRouter, HTTPException, Request, Response, Depends, Cookie
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from app.auth import encrypt_token, decrypt_token, TokenDecryptError
@@ -70,8 +71,9 @@ async def login():
         state,
         max_age=600,
         httponly=True,
-        samesite="Lax",
-        secure=settings.frontend_origin.startswith("https"),
+        samesite="lax",
+        secure=settings.frontend_origin.startswith("https://"),
+        path="/",
     )
     
     return response
@@ -132,15 +134,18 @@ async def callback(code: str, state: str, request: Request, db: Session = Depend
     
     response = Response(status_code=302)
     response.headers["Location"] = settings.frontend_origin
+    
     response.set_cookie(
         "session",
         session_token,
         max_age=86400 * 30,
         httponly=True,
-        samesite="Lax",
-        secure=settings.frontend_origin.startswith("https"),
+        samesite="lax",
+        secure=settings.frontend_origin.startswith("https://"),
+        path="/",
     )
-    response.delete_cookie("oauth_state")
+
+    response.delete_cookie("oauth_state", path="/")
     
     return response
 
@@ -172,13 +177,13 @@ async def me(request: Request, db: Session = Depends(get_db)):
 @router.post("/logout")
 async def logout(request: Request):
     session_token = request.cookies.get("session")
-    
+
     if not session_token:
         raise HTTPException(status_code=401, detail="Not logged in")
-    
-    response = Response(status_code=200, content="Logged out")
-    response.delete_cookie("session")
-    
+
+    response = JSONResponse({"status": "logged_out"})
+    response.delete_cookie("session", path="/")
+
     return response
 
 
@@ -217,9 +222,17 @@ async def disconnect(request: Request, db: Session = Depends(get_db)):
     db.commit()
     
     if revoke_failed:
-        return {"message": "Revoked locally but remote revoke failed", "warning": True}
+        return {
+        "status": "disconnected",
+        "warning": True,
+        "message": "Revoked locally but remote revoke failed",
+    }
     
-    return {"message": "Disconnected successfully"}
+    return {
+    "status": "disconnected",
+    "warning": False,
+    "message": "Disconnected successfully",
+    }
 
 
 @router.delete("/account")
@@ -256,9 +269,8 @@ async def delete_account(request: Request, db: Session = Depends(get_db)):
     db.commit()
     
     response_obj = {"status": "deleted"}
-    response = Response(content=str(response_obj), status_code=200)
-    response.delete_cookie("session", path="/", secure=False)
-    
+    response = JSONResponse({"status": "deleted"})  
+    response.delete_cookie("session", path="/")
     return response
 
 

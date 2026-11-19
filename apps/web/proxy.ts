@@ -1,27 +1,28 @@
+
 import { NextRequest, NextResponse } from "next/server";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_URL =
+    process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 export async function proxy(request: NextRequest) {
-
     const session = request.cookies.get("session")?.value;
 
     if (!session) {
-        return NextResponse.redirect(new URL("/login", request.url))
+        return NextResponse.redirect(new URL("/login", request.url));
     }
 
     try {
         const response = await fetch(`${API_URL}/api/auth/me`, {
             method: "GET",
             headers: {
-                Cookie: `session=${session}`
+                Cookie: `session=${session}`,
             },
-            cache: "no-store"
+            cache: "no-store",
         });
 
-
-        if (response.status == 401 || response.status == 403) {
-            return NextResponse.redirect(new URL("/login", request.url));
+        if (response.status === 401 || response.status === 403) {
+            const loginUrl = new URL("/login", request.url);
+            return NextResponse.redirect(loginUrl);
         }
 
         if (!response.ok) {
@@ -31,8 +32,7 @@ export async function proxy(request: NextRequest) {
         }
 
         return NextResponse.next();
-    }
-    catch (error) {
+    } catch (error) {
         console.error("Session validation failed:", error);
 
         return new NextResponse("Authentication service unavailable", {
@@ -41,9 +41,8 @@ export async function proxy(request: NextRequest) {
     }
 }
 
-
 export const config = {
     matcher: [
-        "/((?!login|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+        "/((?!login(?:/|$)|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
     ],
 };
