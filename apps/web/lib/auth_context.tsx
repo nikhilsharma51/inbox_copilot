@@ -9,7 +9,7 @@ import React, {
   useCallback,
 } from 'react';
 
-import { User, APIError } from '@/types/api-types';
+import { User, APIError } from '@/lib/types';
 import { api } from '@/lib/api';
 
 interface AuthContextType {
@@ -31,7 +31,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [authError, setAuthError] = useState<string | null>(null);
 
-  // Fetch the currently authenticated user.
   const getUser = useCallback(async (): Promise<User | null> => {
     try {
       const currentUser = await api.auth.me();
@@ -58,12 +57,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  // Redirect to backend Google OAuth login.
   const login = useCallback(() => {
     window.location.assign(api.auth.getLoginUrl());
   }, []);
 
-  // Terminate the application session.
   const logout = useCallback(async () => {
     try {
       await api.auth.logout();
@@ -79,15 +76,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  // Disconnect Google integration.
   const disconnect = useCallback(async () => {
     await api.auth.disconnect();
-
-    // Refresh user state rather than assuming the app session ended.
     await getUser();
   }, [getUser]);
 
-  // Verify the session when the provider mounts.
   useEffect(() => {
     let active = true;
 
@@ -95,7 +88,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         await getUser();
       } catch {
-        // getUser already records the authentication error.
       } finally {
         if (active) {
           setIsLoading(false);

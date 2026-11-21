@@ -1,154 +1,179 @@
-import axios , { AxiosError } from 'axios';
-
 import {
-    User,
-    Thread,
-    ThreadDetail,
-    SyncResult,
-    ClassifyStatus,
-    Category,
-    ChatResponse,
-    DraftResponse,
-    DraftListItem,
-    APIError,
-} from '../types/api-types';
+  User,
+  Thread,
+  Message,
+  Draft,
+  SyncResult,
+  ClassifyStatus,
+  Category,
+  ChatResponse,
+  APIError,
+} from '@/lib/types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
-const apiClient = axios.create({
-    baseURL : API_URL,
-    withCredentials : true, 
-    headers :  {
-        'Content-Type': 'application/json',
-    },
-    timeout: 30000,
-})
+/**
+ * Friendly error message for users
+ */
+export function friendlyMessage(error: unknown): string {
+  if (!(error instanceof APIError)) {
+    return 'Something went wrong. Please try again.';
+  }
 
-apiClient.interceptors.response.use(
-    (response) => response,
-    (error: AxiosError<{ detail?: string }>) => {
-        const status = error.response?.status ?? 500;
-        const message =
-            error.response?.data?.detail ||
-            error.message ||
-            'Unknown error';
+  switch (error.status) {
+    case 401:
+      return 'Your session expired. Please sign in again.';
+    case 404:
+      return 'That item no longer exists.';
+    case 409:
+      return 'This draft was already sent or is being sent.';
+    case 429:
+      return 'Rate limit or daily send cap reached. Try again later.';
+    case 502:
+      return 'Gmail or the AI service failed. Try again.';
+    default:
+      return error.message || 'Something went wrong.';
+  }
+}
 
-        return Promise.reject(new APIError(status, message));
-    }
-
-);
-
-export const api = {
-    auth: {
-        getLoginUrl: () => `${API_URL}/api/auth/login`,
-
-        me: async () =>
-            (await apiClient.get<User>('/api/auth/me')).data,
-
-        logout: async () =>
-            (await apiClient.post<{ status: string }>('/api/auth/logout')).data,
-
-        disconnect: async () =>
-            (await apiClient.post<{ status: string }>('/api/auth/disconnect')).data,
-
-        deleteAccount: async () =>
-            (await apiClient.delete<{ status: string }>('/api/account')).data,
-    },
-
-    threads: {
-        list: async () =>
-            (await apiClient.get<Thread[]>('/api/threads')).data,
-
-        get: async (threadId: string) =>
-            (await apiClient.get<ThreadDetail>(
-                `/api/threads/${threadId}`
-            )).data,
-
-        sync: async () =>
-            (await apiClient.post<SyncResult>('/api/sync')).data,
-    },
-
-    classify: {
-        start: async () =>
-            (await apiClient.post<{ started: boolean }>('/api/classify')).data,
-
-        status: async () =>
-            (await apiClient.get<ClassifyStatus>('/api/status')).data,
-    },
-
-    drafts: {
-        create: async (
-            threadId: string,
-            instruction: string,
-            style: string = 'professional'
-        ) =>
-            (
-                await apiClient.post<DraftResponse>(
-                    `/api/threads/${threadId}/drafts`,
-                    { instruction, style }
-                )
-            ).data,
-
-        list: async (threadId: string) =>
-            (
-                await apiClient.get<DraftListItem[]>(
-                    `/api/threads/${threadId}/drafts`
-                )
-            ).data,
-
-        edit: async (
-            draftId: string,
-            updates: { subject?: string; body?: string }
-        ) =>
-            (
-                await apiClient.patch<DraftResponse>(
-                    `/api/drafts/${draftId}`,
-                    updates
-                )
-            ).data,
-
-        discard: async (draftId: string) =>
-            (
-                await apiClient.post<{ status: string }>(
-                    `/api/drafts/${draftId}/discard`
-                )
-            ).data,
-
-        send: async (draftId: string) =>
-            (
-                await apiClient.post<{
-                    status: string;
-                    sent_at: string;
-                }>(`/api/drafts/${draftId}/send`)
-            ).data,
-    },
-
-    categories: {
-        list: async () =>
-            (await apiClient.get<Category[]>('/api/categories')).data,
-    },
-
-    chat: {
-        ask: async (message: string) =>
-            (
-                await apiClient.post<ChatResponse>(
-                    '/api/chat',
-                    { message }
-                )
-            ).data,
-    },
-
-    health: {
-        check: async (): Promise<boolean> => {
-            try {
-                const response = await apiClient.get('/healthz');
-                return response.status >= 200 && response.status < 300;
-            } catch {
-                return false;
-            }
+/**
+ * API client with automatic error handling and 401 redirects
+ */
+const apiClient = {
+  async request<T>(
+    method: 'GET' | 'POST' | 'PATCH' | 'DELETE',
+    path: string,
+    data?: unknown
+  ): Promise<T> {
+    try {
+      const url = `${API_URL}${path}`;
+      const options: RequestInit = {
+        method,
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
         },
-    },
+      };
+
+      if (data) {
+        options.body = JSON.stringify(data);
+      }
+
+      const response = await fetch(url, options);
+
+      // Handle 401 - redirect to login
+      if (response.status === 401) {
+        if (typeof window !== 'undefined') {
+          window.location.href = '/login';
+        }
+        throw new APIError(401, 'Session expired');
+      }
+
+      // Parse response
+      let responseData: unknown;
+      try {
+        responseData = await response.json();
+      } catch {
+        responseData = null;
+      }
+
+      if (!response.ok) {
+        const message =
+          (responseData as { detail?: string })?.detail ||
+          `HTTP ${response.status}`;
+        throw new APIError(response.status, message);
+      }
+
+      return responseData as T;
+    } catch (error) {
+      if (error instanceof APIError) {
+        throw error;
+      }
+      throw new APIError(
+        500,
+        error instanceof Error ? error.message : 'Unknown error'
+      );
+    }
+  },
+
+  get<T>(path: string) {
+    return this.request<T>('GET', path);
+  },
+
+  post<T>(path: string, data?: unknown) {
+    return this.request<T>('POST', path, data);
+  },
+
+  patch<T>(path: string, data?: unknown) {
+    return this.request<T>('PATCH', path, data);
+  },
+
+  delete<T>(path: string) {
+    return this.request<T>('DELETE', path);
+  },
 };
 
-export { APIError };
-export { apiClient };
+export const api = {
+  auth: {
+    getLoginUrl: () => `${API_URL}/api/auth/login`,
+
+    me: async () => apiClient.get<User>('/api/auth/me'),
+
+    logout: async () => apiClient.post<{ status: string }>('/api/auth/logout'),
+
+    disconnect: async () =>
+      apiClient.post<{ status: string }>('/api/auth/disconnect'),
+
+    deleteAccount: async () =>
+      apiClient.delete<{ status: string }>('/api/account'),
+  },
+
+  threads: {
+    list: async () => apiClient.get<Thread[]>('/api/threads'),
+
+    get: async (threadId: string) =>
+      apiClient.get<Thread & { messages: Message[] }>(
+        `/api/threads/${threadId}`
+      ),
+
+    setCategory: async (threadId: string, category: string) =>
+      apiClient.patch<Thread>(`/api/threads/${threadId}`, { category }),
+  },
+
+  sync: async () => apiClient.post<SyncResult>('/api/sync'),
+
+  classify: async () =>
+    apiClient.post<{ status: string }>('/api/classify'),
+
+  status: async () => apiClient.get<ClassifyStatus>('/api/status'),
+
+  drafts: {
+    create: async (threadId: string, instruction: string) =>
+      apiClient.post<Draft>(`/api/threads/${threadId}/drafts`, {
+        instruction,
+      }),
+
+    list: async (threadId: string) =>
+      apiClient.get<Draft[]>(`/api/threads/${threadId}/drafts`),
+
+    update: async (draftId: string, updates: Partial<Draft>) =>
+      apiClient.patch<Draft>(`/api/drafts/${draftId}`, updates),
+
+    send: async (draftId: string) =>
+      apiClient.post<{ status: string }>(`/api/drafts/${draftId}/send`),
+
+    discard: async (draftId: string) =>
+      apiClient.post<{ status: string }>(`/api/drafts/${draftId}/discard`),
+  },
+
+  categories: {
+    list: async () => apiClient.get<Category[]>('/api/categories'),
+  },
+
+  chat: {
+    ask: async (message: string) =>
+      apiClient.post<ChatResponse>('/api/chat', { message }),
+  },
+};
+
+export { APIError, friendlyMessage };

@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import httpx
+import jwt
 from fastapi import APIRouter, HTTPException, Request, Response, Depends, Cookie
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
@@ -104,7 +105,6 @@ async def callback(code: str, state: str, request: Request, db: Session = Depend
         raise HTTPException(status_code=400, detail="No access token in response")
     
     if id_token:
-        import jwt
         user_info = jwt.decode(id_token, options={"verify_signature": False})
     else:
         user_info = await _get_user_info(access_token)
